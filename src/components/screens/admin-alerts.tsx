@@ -385,7 +385,7 @@ export function AdminAlertsScreen() {
       <BottomNav
         items={[
           { label: 'Alertas', icon: 'notifications', active: true, onClick: () => setScreen('admin') },
-          { label: 'Pacientes', icon: 'groups', active: false, onClick: () => setScreen('admin') },
+          { label: 'Pacientes', icon: 'groups', active: false, onClick: () => setScreen('admin-patients') },
           { label: 'Historial', icon: 'history', active: false, onClick: () => setScreen('admin') },
           { label: 'Consejos', icon: 'lightbulb', active: false, onClick: () => setScreen('admin') },
           { label: 'Ajustes', icon: 'settings', active: false, onClick: () => handleLogout() },

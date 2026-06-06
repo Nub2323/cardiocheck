@@ -8,10 +8,12 @@ import { MaterialIcon } from '@/components/icons'
 import { TipCard } from '@/components/tip-card'
 
 export function PatientDataScreen() {
-  const { patientName, patientDni, setPatientName, setPatientDni, setPatientId, setScreen } = useAppState()
+  const { patientDni, setPatientDni, setPatientName, setPatientId, setScreen } = useAppState()
+  const [birthDate, setBirthDate] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [dniError, setDniError] = useState<string | null>(null)
+  const [birthDateError, setBirthDateError] = useState<string | null>(null)
 
   const validateDni = (dni: string): boolean => {
     const digits = dni.replace(/\D/g, '')
@@ -23,10 +25,36 @@ export function PatientDataScreen() {
     return true
   }
 
-  const canContinue = patientName.trim().length > 0 && patientDni.trim().length >= 7 && patientDni.trim().length <= 8 && !dniError
+  const validateBirthDate = (date: string): boolean => {
+    if (!date) {
+      setBirthDateError('La fecha de nacimiento es requerida')
+      return false
+    }
+    const d = new Date(date)
+    const now = new Date()
+    if (d >= now) {
+      setBirthDateError('La fecha no puede ser futura')
+      return false
+    }
+    const age = now.getFullYear() - d.getFullYear()
+    if (age < 1 || age > 120) {
+      setBirthDateError('Fecha de nacimiento inválida')
+      return false
+    }
+    setBirthDateError(null)
+    return true
+  }
+
+  const canContinue =
+    patientDni.trim().length >= 7 &&
+    patientDni.trim().length <= 8 &&
+    !dniError &&
+    birthDate.length > 0 &&
+    !birthDateError
 
   const handleContinue = async () => {
     if (!validateDni(patientDni)) return
+    if (!validateBirthDate(birthDate)) return
 
     setLoading(true)
     setError(null)
@@ -35,16 +63,21 @@ export function PatientDataScreen() {
       const res = await fetch('/api/patients', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: patientName.trim(), dni: patientDni.trim() }),
+        body: JSON.stringify({
+          dni: patientDni.trim(),
+          birthDate,
+        }),
       })
 
+      const data = await res.json()
+
       if (!res.ok) {
-        const data = await res.json()
-        setError(data.error || 'Error al registrar paciente')
+        setError(data.error || 'Error al verificar paciente')
         return
       }
 
-      const data = await res.json()
+      // Patient verified — store their info
+      setPatientName(data.patient.name)
       setPatientId(data.patient.id)
       setScreen('consent')
     } catch {
@@ -69,11 +102,27 @@ export function PatientDataScreen() {
             className="mb-1 text-lg font-extrabold"
             style={{ color: '#0F172A' }}
           >
-            Sus datos personales
+            Identificación del paciente
           </h2>
           <p className="text-[13px] leading-relaxed text-[#475569]">
-            Necesitamos identificarlo para registrar su control diario
+            Ingrese su DNI y fecha de nacimiento para acceder al sistema de seguimiento
           </p>
+        </div>
+
+        {/* Info Banner */}
+        <div
+          className="mb-4 rounded-2xl border-2 p-4"
+          style={{
+            backgroundColor: '#EFF6FF',
+            borderColor: '#BFDBFE',
+          }}
+        >
+          <div className="flex items-start gap-2">
+            <MaterialIcon name="info" size={18} className="mt-0.5 shrink-0 text-[#00288e]" />
+            <p className="text-[11px] leading-relaxed text-[#1E3A8A]">
+              Solo los pacientes registrados por el equipo médico pueden acceder. Si no puede ingresar, solicite al personal de salud que lo registre en el sistema.
+            </p>
+          </div>
         </div>
 
         {/* Form Card */}
@@ -85,28 +134,8 @@ export function PatientDataScreen() {
               '0 10px 25px -5px rgba(15,40,100,0.14), 0 8px 10px -6px rgba(15,40,100,0.07)',
           }}
         >
-          {/* Name Field */}
-          <div className="mb-5">
-            <label
-              className="mb-2 block text-[11px] font-bold tracking-wide text-[#475569]"
-              htmlFor="patient-name"
-            >
-              NOMBRE Y APELLIDO
-            </label>
-            <input
-              id="patient-name"
-              type="text"
-              value={patientName}
-              onChange={(e) => setPatientName(e.target.value)}
-              placeholder="Ej: María García"
-              className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 text-sm text-[#0F172A] placeholder:text-[#94A3B8] focus:border-[#00288e] focus:outline-none focus:ring-2 focus:ring-[#00288e]/20"
-              style={{ minHeight: 48 }}
-              autoComplete="name"
-            />
-          </div>
-
           {/* DNI Field */}
-          <div>
+          <div className="mb-5">
             <label
               className="mb-2 block text-[11px] font-bold tracking-wide text-[#475569]"
               htmlFor="patient-dni"
@@ -146,18 +175,60 @@ export function PatientDataScreen() {
               </p>
             )}
           </div>
+
+          {/* Birth Date Field */}
+          <div>
+            <label
+              className="mb-2 block text-[11px] font-bold tracking-wide text-[#475569]"
+              htmlFor="patient-birthdate"
+            >
+              FECHA DE NACIMIENTO
+            </label>
+            <input
+              id="patient-birthdate"
+              type="date"
+              value={birthDate}
+              onChange={(e) => {
+                setBirthDate(e.target.value)
+                if (e.target.value) {
+                  setBirthDateError(null)
+                }
+              }}
+              className="w-full rounded-xl border bg-[#F8FAFC] px-4 py-3 text-sm text-[#0F172A] focus:border-[#00288e] focus:outline-none focus:ring-2 focus:ring-[#00288e]/20"
+              style={{
+                minHeight: 48,
+                borderColor: birthDateError ? '#DC2626' : '#E2E8F0',
+              }}
+              max={new Date().toISOString().split('T')[0]}
+            />
+            {birthDateError && (
+              <p className="mt-1.5 text-[11px] font-semibold text-[#DC2626]">
+                {birthDateError}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Error Message */}
         {error && (
           <div
-            className="mb-4 rounded-xl border-2 p-3"
+            className="mb-4 rounded-xl border-2 p-4"
             style={{
               backgroundColor: '#FEF2F2',
               borderColor: '#FECACA',
             }}
           >
-            <p className="text-[12px] font-semibold text-[#7F1D1D]">{error}</p>
+            <div className="flex items-start gap-2">
+              <MaterialIcon name="error" size={18} className="mt-0.5 shrink-0 text-[#DC2626]" />
+              <div>
+                <p className="text-[12px] font-semibold text-[#7F1D1D]">{error}</p>
+                {error.includes('No se encontró') && (
+                  <p className="mt-1 text-[11px] text-[#7F1D1D]/70">
+                    Diríjase a la Unidad de Insuficiencia Cardíaca para solicitar su registro en el sistema.
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
@@ -177,11 +248,11 @@ export function PatientDataScreen() {
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-              Registrando...
+              Verificando...
             </>
           ) : (
             <>
-              Continuar
+              Ingresar
               <MaterialIcon name="chevron_right" size={18} />
             </>
           )}
@@ -189,8 +260,8 @@ export function PatientDataScreen() {
 
         {/* Tip Card */}
         <TipCard
-          title="Consejo de Identificación"
-          text="Sus datos son confidenciales y se utilizan únicamente para el seguimiento de su salud cardíaca. Solo su equipo médico tiene acceso a esta información."
+          title="Verificación de identidad"
+          text="Sus datos son verificados contra los registros del hospital para proteger su información. Solo el equipo médico puede registrar nuevos pacientes en el sistema."
         />
 
         {/* Footer */}

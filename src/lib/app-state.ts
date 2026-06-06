@@ -10,6 +10,7 @@ export type ScreenId =
   | 'complete'
   | 'pin'
   | 'admin'
+  | 'admin-patients'
   | 'history'
 
 export type AnswerSeverity = 'green' | 'neutral' | 'yellow-low' | 'yellow' | 'yellow-high' | 'red'
