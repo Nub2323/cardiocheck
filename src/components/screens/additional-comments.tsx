@@ -1,37 +1,65 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useAppState, CHECKIN_QUESTIONS } from '@/lib/app-state'
+import { useAppState, CHECKIN_QUESTIONS, deriveOverallSeverity } from '@/lib/app-state'
 import { AppHeader } from '@/components/app-header'
 import { MaterialIcon } from '@/components/icons'
 import { TipCard } from '@/components/tip-card'
-import { getSeverityStyles } from '@/components/status-badge'
-import type { AnswerSeverity } from '@/lib/app-state'
 
 export function AdditionalCommentsScreen() {
-  const { currentQuestion, answers, setAnswer, setAdditionalComment, setScreen } = useAppState()
-  const [selectedOption, setSelectedOption] = useState<string | null>(answers[currentQuestion] ?? null)
+  const { answers, answerSeverities, patientId, setAdditionalComment, setScreen } = useAppState()
   const [comment, setComment] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const question = CHECKIN_QUESTIONS[currentQuestion]
-  const totalQuestions = CHECKIN_QUESTIONS.length
-  const progress = 80
+  const progress = 100
 
-  const handleSelect = (optionLabel: string, severity: AnswerSeverity) => {
-    setSelectedOption(optionLabel)
-    setAnswer(currentQuestion, optionLabel)
-    void severity
-  }
+  const handleFinish = async () => {
+    setSubmitting(true)
+    setError(null)
 
-  const handleFinish = () => {
-    setAdditionalComment(comment)
-    setScreen('complete')
+    try {
+      // Build answers array from store
+      const answersArray = CHECKIN_QUESTIONS.map((q, index) => ({
+        questionIndex: index,
+        question: q.question,
+        answer: answers[index] || '',
+        severity: answerSeverities[index] || 'green',
+      }))
+
+      // Derive overall severity
+      const severities = answersArray.map((a) => a.severity)
+      const overallSeverity = deriveOverallSeverity(severities)
+
+      setAdditionalComment(comment)
+
+      const res = await fetch('/api/checkins', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patientId,
+          answers: answersArray,
+          comment: comment || null,
+          overallSeverity,
+        }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.error || 'Error al enviar el registro')
+        return
+      }
+
+      setScreen('complete')
+    } catch {
+      setError('Error de conexión. Intente de nuevo.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const handleBack = () => {
-    if (currentQuestion > 0) {
-      setScreen('checkin')
-    }
+    setScreen('checkin')
   }
 
   return (
@@ -47,7 +75,7 @@ export function AdditionalCommentsScreen() {
         <div className="mb-5">
           <div className="mb-1 flex items-center justify-between">
             <span className="text-[11px] font-semibold text-[#475569]">
-              Pregunta {totalQuestions} de {totalQuestions}
+              Paso final
             </span>
             <span className="text-[11px] font-bold text-[#00288e]">{progress}%</span>
           </div>
@@ -62,7 +90,7 @@ export function AdditionalCommentsScreen() {
           </div>
         </div>
 
-        {/* Last Question Card */}
+        {/* Comments Title Card */}
         <div
           className="mb-5 rounded-[24px] p-6"
           style={{
@@ -72,54 +100,14 @@ export function AdditionalCommentsScreen() {
           }}
         >
           <div className="mb-3 flex items-center gap-3">
-            <span className="text-2xl">{question.emoji}</span>
+            <span className="text-2xl">💬</span>
             <h3 className="text-[15px] font-bold leading-snug text-[#0F172A]">
-              {question.question}
+              Comentarios adicionales
             </h3>
           </div>
-
-          {/* Answer Options */}
-          <div className="space-y-2.5">
-            {question.options.map((option) => {
-              const isSelected = selectedOption === option.label
-              const severityStyle = getSeverityStyles(option.severity)
-              const isYellow =
-                option.severity === 'yellow' ||
-                option.severity === 'yellow-high' ||
-                option.severity === 'yellow-low'
-
-              return (
-                <button
-                  key={option.label}
-                  onClick={() => handleSelect(option.label, option.severity)}
-                  className="flex w-full items-center gap-3 rounded-xl border-2 px-4 py-3 text-left text-[13px] font-medium transition-all active:scale-[0.98]"
-                  style={{
-                    minHeight: 48,
-                    borderColor: isSelected
-                      ? severityStyle.border
-                      : isYellow
-                        ? '#FEF3C7'
-                        : '#E2E8F0',
-                    backgroundColor: isSelected
-                      ? severityStyle.bg
-                      : isYellow
-                        ? '#FFFBEB'
-                        : '#F8FAFC',
-                    color: isSelected ? severityStyle.text : '#0F172A',
-                  }}
-                >
-                  <span
-                    className="h-3 w-3 shrink-0 rounded-full border-2"
-                    style={{
-                      borderColor: isSelected ? severityStyle.border : '#CBD5E1',
-                      backgroundColor: isSelected ? severityStyle.border : 'transparent',
-                    }}
-                  />
-                  <span className="flex-1">{option.label}</span>
-                </button>
-              )
-            })}
-          </div>
+          <p className="mb-3 text-[12px] text-[#475569]">
+            Si lo desea, puede agregar comentarios sobre su estado o síntomas adicionales.
+          </p>
         </div>
 
         {/* Comments Textarea */}
@@ -143,6 +131,19 @@ export function AdditionalCommentsScreen() {
           />
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div
+            className="mb-4 rounded-xl border-2 p-3"
+            style={{
+              backgroundColor: '#FEF2F2',
+              borderColor: '#FECACA',
+            }}
+          >
+            <p className="text-[12px] font-semibold text-[#7F1D1D]">{error}</p>
+          </div>
+        )}
+
         {/* Navigation */}
         <div className="mb-4 flex gap-3">
           <button
@@ -155,15 +156,27 @@ export function AdditionalCommentsScreen() {
           </button>
           <button
             onClick={handleFinish}
-            disabled={!selectedOption}
+            disabled={submitting}
             className="flex flex-1 items-center justify-center gap-1 rounded-2xl px-4 py-3 text-[13px] font-bold text-white transition-all active:scale-[0.97] disabled:opacity-40"
             style={{
               backgroundColor: '#00288e',
               minHeight: 48,
             }}
           >
-            Finalizar
-            <MaterialIcon name="check_circle" size={16} />
+            {submitting ? (
+              <>
+                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Enviando...
+              </>
+            ) : (
+              <>
+                Finalizar
+                <MaterialIcon name="check_circle" size={16} />
+              </>
+            )}
           </button>
         </div>
 

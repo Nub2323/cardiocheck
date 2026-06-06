@@ -94,6 +94,7 @@ export function WelcomeScreen() {
             inmediatamente a la guardia más cercana. Este sistema NO reemplaza la atención de emergencia.
           </p>
           <button
+            onClick={() => window.open('https://www.google.com/maps/search/guardia+hospital+Buenos+Aires', '_blank')}
             className="flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white"
             style={{
               backgroundColor: '#DC2626',
@@ -165,10 +166,10 @@ export function WelcomeScreen() {
 
       <BottomNav
         items={[
-          { label: 'Alertas', icon: 'notifications', active: false, onClick: () => setScreen('welcome') },
-          { label: 'Pacientes', icon: 'groups', active: false, onClick: () => setScreen('welcome') },
+          { label: 'Alertas', icon: 'notifications', active: false, onClick: () => setScreen('pin') },
+          { label: 'Pacientes', icon: 'groups', active: false, onClick: () => setScreen('pin') },
           { label: 'Inicio', icon: 'home', active: true, onClick: () => setScreen('welcome') },
-          { label: 'Historial', icon: 'history', active: false, onClick: () => setScreen('welcome') },
+          { label: 'Historial', icon: 'history', active: false, onClick: () => setScreen('patient-data') },
           { label: 'Equipo', icon: 'medical_services', active: false, onClick: () => setScreen('pin') },
         ]}
       />

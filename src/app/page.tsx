@@ -10,6 +10,7 @@ import { AdditionalCommentsScreen } from '@/components/screens/additional-commen
 import { PinAccessScreen } from '@/components/screens/pin-access'
 import { AdminAlertsScreen } from '@/components/screens/admin-alerts'
 import { CheckinCompleteScreen } from '@/components/screens/checkin-complete'
+import { CheckinHistoryScreen } from '@/components/screens/checkin-history'
 
 function ScreenRouter() {
   const { currentScreen } = useAppState()
@@ -33,6 +34,8 @@ function ScreenRouter() {
       return <PinAccessScreen />
     case 'admin':
       return <AdminAlertsScreen />
+    case 'history':
+      return <CheckinHistoryScreen />
     default:
       return <WelcomeScreen />
   }

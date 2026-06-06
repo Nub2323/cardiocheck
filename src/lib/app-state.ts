@@ -10,6 +10,7 @@ export type ScreenId =
   | 'complete'
   | 'pin'
   | 'admin'
+  | 'history'
 
 export type AnswerSeverity = 'green' | 'neutral' | 'yellow-low' | 'yellow' | 'yellow-high' | 'red'
 
@@ -77,12 +78,38 @@ export const CHECKIN_QUESTIONS: CheckinQuestion[] = [
   },
 ]
 
+// Severity ordering for deriving overall severity
+export const SEVERITY_ORDER: Record<string, number> = {
+  green: 0,
+  neutral: 1,
+  'yellow-low': 2,
+  yellow: 3,
+  'yellow-high': 4,
+  red: 5,
+}
+
+export function deriveOverallSeverity(severities: string[]): string {
+  if (severities.length === 0) return 'green'
+  let maxSeverity = 'green'
+  let maxOrder = 0
+  for (const s of severities) {
+    const order = SEVERITY_ORDER[s] ?? 0
+    if (order > maxOrder) {
+      maxOrder = order
+      maxSeverity = s
+    }
+  }
+  return maxSeverity
+}
+
 interface AppState {
   currentScreen: ScreenId
   patientName: string
   patientDni: string
+  patientId: string
   currentQuestion: number
   answers: Record<number, string>
+  answerSeverities: Record<number, AnswerSeverity>
   additionalComment: string
   isAdmin: boolean
   consentAccepted: boolean
@@ -90,8 +117,9 @@ interface AppState {
   setScreen: (screen: ScreenId) => void
   setPatientName: (name: string) => void
   setPatientDni: (dni: string) => void
+  setPatientId: (id: string) => void
   setCurrentQuestion: (q: number) => void
-  setAnswer: (questionIndex: number, answer: string) => void
+  setAnswer: (questionIndex: number, answer: string, severity: AnswerSeverity) => void
   setAdditionalComment: (comment: string) => void
   setIsAdmin: (admin: boolean) => void
   setConsentAccepted: (accepted: boolean) => void
@@ -102,8 +130,10 @@ export const useAppState = create<AppState>((set) => ({
   currentScreen: 'welcome',
   patientName: '',
   patientDni: '',
+  patientId: '',
   currentQuestion: 0,
   answers: {},
+  answerSeverities: {},
   additionalComment: '',
   isAdmin: false,
   consentAccepted: false,
@@ -111,10 +141,12 @@ export const useAppState = create<AppState>((set) => ({
   setScreen: (screen) => set({ currentScreen: screen }),
   setPatientName: (name) => set({ patientName: name }),
   setPatientDni: (dni) => set({ patientDni: dni }),
+  setPatientId: (id) => set({ patientId: id }),
   setCurrentQuestion: (q) => set({ currentQuestion: q }),
-  setAnswer: (questionIndex, answer) =>
+  setAnswer: (questionIndex, answer, severity) =>
     set((state) => ({
       answers: { ...state.answers, [questionIndex]: answer },
+      answerSeverities: { ...state.answerSeverities, [questionIndex]: severity },
     })),
   setAdditionalComment: (comment) => set({ additionalComment: comment }),
   setIsAdmin: (admin) => set({ isAdmin: admin }),
@@ -123,6 +155,7 @@ export const useAppState = create<AppState>((set) => ({
     set({
       currentQuestion: 0,
       answers: {},
+      answerSeverities: {},
       additionalComment: '',
     }),
 }))

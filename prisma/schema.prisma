@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,20 +7,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Patient {
+  id        String    @id @default(cuid())
+  name      String
+  dni       String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  checkIns  CheckIn[]
+}
+
+model CheckIn {
+  id        String          @id @default(cuid())
+  patientId String
+  patient   Patient         @relation(fields: [patientId], references: [id])
+  comment   String?
+  severity  String          @default("green") // overall severity: green, neutral, yellow, red
+  createdAt DateTime        @default(now())
+  answers   CheckInAnswer[]
+  alert     Alert?
+}
+
+model CheckInAnswer {
+  id           String   @id @default(cuid())
+  checkInId    String
+  checkIn      CheckIn  @relation(fields: [checkInId], references: [id], onDelete: Cascade)
+  questionIndex Int
+  question     String
+  answer       String
+  severity     String // green, neutral, yellow-low, yellow, yellow-high, red
+}
+
+model Alert {
   id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
+  checkInId String   @unique
+  checkIn   CheckIn  @relation(fields: [checkInId], references: [id], onDelete: Cascade)
+  status    String   @default("pending") // pending, acknowledged, dismissed
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Post {
-  id        String   @id @default(cuid())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model AdminPin {
+  id    String @id @default(cuid())
+  pin   String @unique
+  label String?
 }

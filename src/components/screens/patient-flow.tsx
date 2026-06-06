@@ -133,15 +133,26 @@ export function PatientFlowScreen() {
               </>
             )}
           </button>
+          <button
+            onClick={() => setScreen('history')}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-[#00288e] px-6 py-3 text-[13px] font-bold transition-all active:scale-[0.97]"
+            style={{
+              color: '#00288e',
+              minHeight: 44,
+            }}
+          >
+            <MaterialIcon name="history" size={18} />
+            Ver Historial
+          </button>
         </div>
       </main>
 
       <BottomNav
         items={[
-          { label: 'Alertas', icon: 'notifications', active: false, onClick: () => setScreen('welcome') },
-          { label: 'Pacientes', icon: 'groups', active: false, onClick: () => setScreen('welcome') },
-          { label: 'Inicio', icon: 'home', active: true, onClick: () => setScreen('welcome') },
-          { label: 'Historial', icon: 'history', active: false, onClick: () => setScreen('flow') },
+          { label: 'Alertas', icon: 'notifications', active: false, onClick: () => setScreen('pin') },
+          { label: 'Pacientes', icon: 'groups', active: false, onClick: () => setScreen('pin') },
+          { label: 'Inicio', icon: 'home', active: true, onClick: () => setScreen('flow') },
+          { label: 'Historial', icon: 'history', active: false, onClick: () => setScreen('history') },
           { label: 'Equipo', icon: 'medical_services', active: false, onClick: () => setScreen('pin') },
         ]}
       />
@@ -161,9 +172,9 @@ export function CheckinScreen() {
   const [localSelection, setLocalSelection] = useState<string | null>(null)
   const selectedOption = localSelection ?? answers[currentQuestion] ?? null
 
-  const handleSelect = (optionLabel: string, _severity: AnswerSeverity) => {
+  const handleSelect = (optionLabel: string, severity: AnswerSeverity) => {
     setLocalSelection(optionLabel)
-    setAnswer(currentQuestion, optionLabel)
+    setAnswer(currentQuestion, optionLabel, severity)
   }
 
   const handleNext = () => {

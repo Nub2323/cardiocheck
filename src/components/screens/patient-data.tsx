@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useAppState } from '@/lib/app-state'
 import { AppHeader } from '@/components/app-header'
 import { BottomNav } from '@/components/bottom-nav'
@@ -8,8 +8,51 @@ import { MaterialIcon } from '@/components/icons'
 import { TipCard } from '@/components/tip-card'
 
 export function PatientDataScreen() {
-  const { patientName, patientDni, setPatientName, setPatientDni, setScreen } = useAppState()
-  const canContinue = patientName.trim().length > 0 && patientDni.trim().length > 0
+  const { patientName, patientDni, setPatientName, setPatientDni, setPatientId, setScreen } = useAppState()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [dniError, setDniError] = useState<string | null>(null)
+
+  const validateDni = (dni: string): boolean => {
+    const digits = dni.replace(/\D/g, '')
+    if (digits.length < 7 || digits.length > 8) {
+      setDniError('El DNI debe tener entre 7 y 8 dígitos')
+      return false
+    }
+    setDniError(null)
+    return true
+  }
+
+  const canContinue = patientName.trim().length > 0 && patientDni.trim().length >= 7 && patientDni.trim().length <= 8 && !dniError
+
+  const handleContinue = async () => {
+    if (!validateDni(patientDni)) return
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const res = await fetch('/api/patients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: patientName.trim(), dni: patientDni.trim() }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.error || 'Error al registrar paciente')
+        return
+      }
+
+      const data = await res.json()
+      setPatientId(data.patient.id)
+      setScreen('consent')
+    } catch {
+      setError('Error de conexión. Intente de nuevo.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -75,27 +118,73 @@ export function PatientDataScreen() {
               type="text"
               inputMode="numeric"
               value={patientDni}
-              onChange={(e) => setPatientDni(e.target.value.replace(/\D/g, ''))}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, '')
+                setPatientDni(val)
+                if (val.length >= 7 && val.length <= 8) {
+                  setDniError(null)
+                } else if (val.length > 0 && val.length < 7) {
+                  setDniError('El DNI debe tener entre 7 y 8 dígitos')
+                } else if (val.length > 8) {
+                  setDniError('El DNI no puede tener más de 8 dígitos')
+                } else {
+                  setDniError(null)
+                }
+              }}
               placeholder="Ej: 28456789"
-              className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 text-sm text-[#0F172A] placeholder:text-[#94A3B8] focus:border-[#00288e] focus:outline-none focus:ring-2 focus:ring-[#00288e]/20"
-              style={{ minHeight: 48 }}
+              className="w-full rounded-xl border bg-[#F8FAFC] px-4 py-3 text-sm text-[#0F172A] placeholder:text-[#94A3B8] focus:border-[#00288e] focus:outline-none focus:ring-2 focus:ring-[#00288e]/20"
+              style={{
+                minHeight: 48,
+                borderColor: dniError ? '#DC2626' : '#E2E8F0',
+              }}
               autoComplete="off"
+              maxLength={8}
             />
+            {dniError && (
+              <p className="mt-1.5 text-[11px] font-semibold text-[#DC2626]">
+                {dniError}
+              </p>
+            )}
           </div>
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div
+            className="mb-4 rounded-xl border-2 p-3"
+            style={{
+              backgroundColor: '#FEF2F2',
+              borderColor: '#FECACA',
+            }}
+          >
+            <p className="text-[12px] font-semibold text-[#7F1D1D]">{error}</p>
+          </div>
+        )}
+
         {/* Continue Button */}
         <button
-          onClick={() => canContinue && setScreen('consent')}
-          disabled={!canContinue}
+          onClick={handleContinue}
+          disabled={!canContinue || loading}
           className="mb-4 flex w-full items-center justify-center gap-2 rounded-2xl px-6 py-3.5 text-sm font-bold text-white transition-all active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100"
           style={{
             backgroundColor: '#00288e',
             minHeight: 48,
           }}
         >
-          Continuar
-          <MaterialIcon name="chevron_right" size={18} />
+          {loading ? (
+            <>
+              <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              Registrando...
+            </>
+          ) : (
+            <>
+              Continuar
+              <MaterialIcon name="chevron_right" size={18} />
+            </>
+          )}
         </button>
 
         {/* Tip Card */}
@@ -114,8 +203,8 @@ export function PatientDataScreen() {
 
       <BottomNav
         items={[
-          { label: 'Alertas', icon: 'notifications', active: false, onClick: () => setScreen('welcome') },
-          { label: 'Pacientes', icon: 'groups', active: false, onClick: () => setScreen('welcome') },
+          { label: 'Alertas', icon: 'notifications', active: false, onClick: () => setScreen('pin') },
+          { label: 'Pacientes', icon: 'groups', active: false, onClick: () => setScreen('pin') },
           { label: 'Inicio', icon: 'home', active: true, onClick: () => setScreen('welcome') },
           { label: 'Progreso', icon: 'trending_up', active: false, onClick: () => setScreen('patient-data') },
           { label: 'Equipo', icon: 'medical_services', active: false, onClick: () => setScreen('pin') },

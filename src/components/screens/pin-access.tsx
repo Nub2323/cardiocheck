@@ -5,16 +5,23 @@ import { useAppState } from '@/lib/app-state'
 import { AppHeader } from '@/components/app-header'
 import { MaterialIcon } from '@/components/icons'
 
-const DEMO_PIN = '1234'
+const MAX_ATTEMPTS = 3
+const COOLDOWN_MS = 30000 // 30 seconds
 
 export function PinAccessScreen() {
   const { setScreen, setIsAdmin } = useAppState()
   const [pin, setPin] = useState<string[]>(['', '', '', ''])
   const [error, setError] = useState(false)
   const [shaking, setShaking] = useState(false)
+  const [failedAttempts, setFailedAttempts] = useState(0)
+  const [cooldownUntil, setCooldownUntil] = useState<number | null>(null)
+  const [verifying, setVerifying] = useState(false)
+
+  const isInCooldown = cooldownUntil !== null && Date.now() < cooldownUntil
 
   const handleDigit = useCallback(
     (digit: string) => {
+      if (isInCooldown || verifying) return
       setError(false)
       const nextEmpty = pin.findIndex((d) => d === '')
       if (nextEmpty === -1) return
@@ -26,24 +33,56 @@ export function PinAccessScreen() {
       // Check if complete
       if (nextEmpty === 3) {
         const entered = newPin.join('')
-        if (entered === DEMO_PIN) {
-          setTimeout(() => {
-            setIsAdmin(true)
-            setScreen('admin')
-          }, 300)
-        } else {
-          setTimeout(() => {
-            setError(true)
-            setShaking(true)
+        setVerifying(true)
+        
+        // Verify PIN via API
+        fetch('/api/admin-pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pin: entered }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.valid) {
+              setTimeout(() => {
+                setIsAdmin(true)
+                setScreen('admin')
+              }, 300)
+            } else {
+              const newFailed = failedAttempts + 1
+              setFailedAttempts(newFailed)
+              
+              if (newFailed >= MAX_ATTEMPTS) {
+                setCooldownUntil(Date.now() + COOLDOWN_MS)
+                setFailedAttempts(0)
+              }
+
+              setTimeout(() => {
+                setError(true)
+                setShaking(true)
+                setTimeout(() => {
+                  setShaking(false)
+                  setPin(['', '', '', ''])
+                }, 600)
+              }, 300)
+            }
+          })
+          .catch(() => {
             setTimeout(() => {
-              setShaking(false)
-              setPin(['', '', '', ''])
-            }, 600)
-          }, 300)
-        }
+              setError(true)
+              setShaking(true)
+              setTimeout(() => {
+                setShaking(false)
+                setPin(['', '', '', ''])
+              }, 600)
+            }, 300)
+          })
+          .finally(() => {
+            setVerifying(false)
+          })
       }
     },
-    [pin, setIsAdmin, setScreen]
+    [pin, setIsAdmin, setScreen, failedAttempts, isInCooldown, verifying]
   )
 
   const handleBackspace = useCallback(() => {
@@ -59,6 +98,10 @@ export function PinAccessScreen() {
   const handleBack = () => {
     setScreen('welcome')
   }
+
+  const cooldownRemaining = cooldownUntil
+    ? Math.max(0, Math.ceil((cooldownUntil - Date.now()) / 1000))
+    : 0
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -120,11 +163,25 @@ export function PinAccessScreen() {
 
         {/* Error Message */}
         <p
-          className="mb-6 text-[12px] font-semibold text-[#DC2626] transition-opacity"
+          className="mb-2 text-[12px] font-semibold text-[#DC2626] transition-opacity"
           style={{ opacity: error ? 1 : 0 }}
         >
           PIN incorrecto. Inténtelo de nuevo
         </p>
+
+        {/* Cooldown Message */}
+        {isInCooldown && (
+          <p className="mb-6 text-[12px] font-semibold text-[#D97706]">
+            Demasiados intentos fallidos. Espere {cooldownRemaining}s para reintentar.
+          </p>
+        )}
+
+        {/* Remaining attempts */}
+        {!isInCooldown && failedAttempts > 0 && (
+          <p className="mb-6 text-[11px] text-[#94A3B8]">
+            {MAX_ATTEMPTS - failedAttempts} intento{MAX_ATTEMPTS - failedAttempts !== 1 ? 's' : ''} restante{MAX_ATTEMPTS - failedAttempts !== 1 ? 's' : ''}
+          </p>
+        )}
 
         {/* Numeric Keypad */}
         <div className="grid grid-cols-3 gap-2.5">
@@ -132,7 +189,8 @@ export function PinAccessScreen() {
             <button
               key={digit}
               onClick={() => handleDigit(digit)}
-              className="flex h-14 w-20 items-center justify-center rounded-xl text-lg font-bold text-[#0F172A] transition-all active:scale-95 active:bg-[#F1F5F9]"
+              disabled={isInCooldown || verifying}
+              className="flex h-14 w-20 items-center justify-center rounded-xl text-lg font-bold text-[#0F172A] transition-all active:scale-95 active:bg-[#F1F5F9] disabled:opacity-50"
               style={{
                 backgroundColor: '#F8FAFC',
                 border: '1px solid #E2E8F0',
@@ -153,7 +211,8 @@ export function PinAccessScreen() {
           </button>
           <button
             onClick={() => handleDigit('0')}
-            className="flex h-14 w-20 items-center justify-center rounded-xl text-lg font-bold text-[#0F172A] transition-all active:scale-95 active:bg-[#F1F5F9]"
+            disabled={isInCooldown || verifying}
+            className="flex h-14 w-20 items-center justify-center rounded-xl text-lg font-bold text-[#0F172A] transition-all active:scale-95 active:bg-[#F1F5F9] disabled:opacity-50"
             style={{
               backgroundColor: '#F8FAFC',
               border: '1px solid #E2E8F0',
