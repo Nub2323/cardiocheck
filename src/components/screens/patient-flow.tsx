@@ -206,20 +206,20 @@ export function CheckinScreen() {
       <main className="flex-1 overflow-y-auto px-4 pb-8 pt-4">
         {/* Progress Bar */}
         <div className="mb-5">
-          <div className="mb-1 flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-[#475569]">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-[12px] font-bold text-[#0F172A]">
               Pregunta {currentQuestion + 1} de {totalQuestions}
             </span>
-            <span className="text-[11px] font-bold text-[#00288e]">
+            <span className="text-[12px] font-bold text-[#00288e]">
               {Math.round(progress)}%
             </span>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-[#E2E8F0]">
+          <div className="h-3 overflow-hidden rounded-full bg-[#E2E8F0]">
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
                 width: `${progress}%`,
-                backgroundColor: '#00288e',
+                backgroundColor: progress === 100 ? '#16A34A' : '#00288e',
               }}
             />
           </div>

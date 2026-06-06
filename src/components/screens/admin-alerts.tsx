@@ -193,11 +193,25 @@ export function AdminAlertsScreen() {
                 '0 10px 25px -5px rgba(15,40,100,0.14), 0 8px 10px -6px rgba(15,40,100,0.07)',
             }}
           >
-            <MaterialIcon name="check_circle" size={48} className="mb-3 text-[#16A34A]" />
-            <p className="text-sm font-bold text-[#0F172A]">Sin alertas pendientes</p>
-            <p className="text-[12px] text-[#475569]">
-              Todas las alertas han sido atendidas
+            <div
+              className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full"
+              style={{ backgroundColor: '#DCFCE7' }}
+            >
+              <MaterialIcon name="check_circle" size={44} className="text-[#16A34A]" />
+            </div>
+            <p className="mb-1 text-base font-bold text-[#0F172A]">Sin alertas pendientes</p>
+            <p className="mb-4 text-[13px] text-[#475569]">
+              Todos los pacientes se encuentran en buen estado. Las alertas aparecerán aquí cuando un paciente reporte síntomas preocupantes.
             </p>
+            <div
+              className="inline-flex items-center gap-2 rounded-xl px-4 py-2"
+              style={{ backgroundColor: '#F0FDF4' }}
+            >
+              <MaterialIcon name="schedule" size={16} className="text-[#166534]" />
+              <span className="text-[11px] font-semibold text-[#166534]">
+                Próximo check-in: 8:00 - 11:00 hs
+              </span>
+            </div>
           </div>
         ) : (
           <div className="space-y-4">
