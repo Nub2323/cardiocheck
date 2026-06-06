@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-container": "#ffa583",
+                      "status-red-text": "#7F1D1D",
+                      "status-red-bg": "#FEE2E2",
+                      "surface-container-high": "#e8e7f1",
+                      "status-yellow-low-text": "#713F12",
+                      "tertiary-fixed": "#ffdbce",
+                      "surface-container-lowest": "#ffffff",
+                      "background-mid": "#E0F2FE",
+                      "tip-bg": "#F0FDF4",
+                      "header-dark": "#1E3A8A",
+                      "on-primary-container": "#a8b8ff",
+                      "on-tertiary-fixed": "#380d00",
+                      "background-end": "#D1FAE5",
+                      "outline": "#757684",
+                      "on-tertiary-fixed-variant": "#802a00",
+                      "tertiary-fixed-dim": "#ffb59a",
+                      "on-secondary": "#ffffff",
+                      "text-muted": "#475569",
+                      "text-main": "#0F172A",
+                      "background-start": "#DBEAFE",
+                      "on-primary-fixed": "#001453",
+                      "status-yellow-low-bg": "#FEF9C3",
+                      "on-surface-variant": "#444653",
+                      "surface-variant": "#e3e1eb",
+                      "on-secondary-fixed-variant": "#005137",
+                      "secondary-container": "#64f9bc",
+                      "tip-border": "#BBF7D0",
+                      "on-background": "#1a1b22",
+                      "border-soft": "#E2E8F0",
+                      "inverse-on-surface": "#f1f0fa",
+                      "tertiary-container": "#872d00",
+                      "status-yellow-high-bg": "#FEF3C7",
+                      "status-green-border": "#16A34A",
+                      "tertiary": "#611e00",
+                      "outline-variant": "#c4c5d5",
+                      "status-yellow-high-text": "#78350F",
+                      "on-tertiary": "#ffffff",
+                      "secondary": "#006c4b",
+                      "tip-text": "#166534",
+                      "on-error": "#ffffff",
+                      "inverse-primary": "#b8c4ff",
+                      "surface-container": "#eeedf7",
+                      "primary-container": "#1e40af",
+                      "primary-fixed": "#dde1ff",
+                      "surface-tint": "#3755c3",
+                      "on-secondary-fixed": "#002114",
+                      "surface": "#fbf8ff",
+                      "on-secondary-container": "#00714e",
+                      "status-yellow-low-border": "#CA8A04",
+                      "on-primary-fixed-variant": "#173bab",
+                      "surface-container-highest": "#e3e1eb",
+                      "status-yellow-high-border": "#D97706",
+                      "status-green-bg": "#DCFCE7",
+                      "primary": "#00288e",
+                      "surface-container-low": "#f4f2fc",
+                      "status-red-border": "#DC2626",
+                      "inverse-surface": "#2f3037",
+                      "surface-dim": "#dad9e3",
+                      "on-error-container": "#93000a",
+                      "error": "#ba1a1a",
+                      "primary-fixed-dim": "#b8c4ff",
+                      "error-container": "#ffdad6",
+                      "secondary-fixed-dim": "#45dfa4",
+                      "status-green-text": "#14532D",
+                      "on-surface": "#1a1b22",
+                      "on-primary": "#ffffff",
+                      "secondary-fixed": "#68fcbf",
+                      "background": "#fbf8ff",
+                      "surface-bright": "#fbf8ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "section-gap": "24px",
+                      "container-max-width": "400px",
+                      "stack-gap": "16px",
+                      "padding-h": "22px",
+                      "padding-v": "18px"
+              },
+              "fontFamily": {
+                      "button-label": ["Nunito Sans"],
+                      "header-subtitle": ["Nunito Sans"],
+                      "caption": ["Nunito Sans"],
+                      "headline-md": ["Nunito Sans"],
+                      "body-lg": ["Nunito Sans"],
+                      "headline-lg": ["Nunito Sans"],
+                      "header-title": ["Nunito Sans"]
+              },
+              "fontSize": {
+                      "button-label": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                      "header-subtitle": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                      "caption": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                      "headline-md": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg": ["22px", {"lineHeight": "28px", "fontWeight": "800"}],
+                      "header-title": ["14px", {"lineHeight": "16px", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            background: linear-gradient(135deg, #DBEAFE 0%, #E0F2FE 50%, #D1FAE5 100%);
+            min-height: 100vh;
+            font-family: 'Nunito Sans', sans-serif;
+        }
+        .main-card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(15,40,100,0.14), 0 8px 10px -6px rgba(15,40,100,0.07);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="flex flex-col items-center">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center px-padding-h py-padding-v max-w-[400px] mx-auto bg-gradient-to-r from-header-dark to-primary-container shadow-md left-1/2 -translate-x-1/2">
+<div class="flex items-center gap-3">
+<div class="bg-on-primary/10 p-1.5 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary" data-icon="monitor_heart">monitor_heart</span>
+</div>
+<div class="flex flex-col">
+<h1 class="font-header-title text-header-title text-on-primary font-bold">Consentimiento Informado - Paciente (Visible)</h1>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="w-full max-w-[400px] mt-[72px] px-padding-h pt-stack-gap pb-section-gap flex flex-col gap-stack-gap">
+<!-- Welcome Illustration / Visual Context -->
+<div class="w-full rounded-[24px] overflow-hidden main-card-shadow h-48 relative">
+<img alt="Medical professional hands" class="w-full h-full object-cover" data-alt="A serene close-up of a healthcare professional’s hands resting on a clean, light surface, symbolizing care and guidance. The lighting is soft and airy, fitting a modern clinic aesthetic. The color palette consists of soft clinical blues and crisp whites, evoking a sense of trust and tranquility for an elderly patient journey." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNtLZQMeYTH5B_d6f3241wiRQ0Rig9kPaGt9nM8zv43C-0Lr8Swpczldcxdwssq3g4pTrsZtoY51C799gKa34ct7W3hADTXi0qpIAkNmaPnkWFZJEbeUGYwYa07qJBt44buRcEl4_y5fLBF954BlrBeASWOZY5MS20uMZCRVkrTJ335OnUAH6o1X8WHBiBO2lbrwHROoNu1bM5mutKbX-T_NQx9J3ZT2v04gvDuOKkKzBoJmSvWKnzQzT_wCKIpGtO87D91F0Etw7B"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent"></div>
+</div>
+<!-- Consent Card -->
+<div class="bg-surface-container-lowest rounded-[24px] p-6 main-card-shadow flex flex-col gap-5 border border-white/50">
+<div class="flex items-center gap-3">
+<div class="bg-primary/10 p-2 rounded-full">
+<span class="material-symbols-outlined text-primary" data-icon="description">description</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-text-main">Consentimiento para el Seguimiento</h2>
+</div>
+<p class="font-body-lg text-body-lg text-text-muted leading-relaxed">
+                Al continuar, usted acepta participar en el programa de seguimiento remoto de la Unidad de Cuidados Cardiológicos del Hospital Dr. T. Álvarez. Sus datos serán tratados de forma confidencial y utilizados exclusivamente para su monitoreo clínico.
+            </p>
+<!-- Important Warning Badge -->
+<div class="bg-status-yellow-low-bg border border-status-yellow-low-border rounded-xl p-4 flex gap-3 items-start">
+<span class="material-symbols-outlined text-status-yellow-low-border mt-0.5" data-icon="report_problem">report_problem</span>
+<p class="font-button-label text-status-yellow-low-text">
+                    Entiendo que este sistema es preventivo y <span class="font-extrabold underline">NO</span> reemplaza la consulta médica ni la atención de urgencias.
+                </p>
+</div>
+<!-- Transparency Point -->
+<div class="flex items-center gap-3 px-1">
+<span class="material-symbols-outlined text-secondary" data-icon="verified_user">verified_user</span>
+<span class="font-caption text-caption text-text-muted">Sus datos están protegidos por la Ley de Protección de Datos Personales.</span>
+</div>
+</div>
+<!-- Action Section -->
+<div class="flex flex-col gap-4 mt-2">
+<button class="w-full bg-primary text-on-primary font-button-label text-button-label py-5 rounded-[14px] shadow-lg hover:opacity-90 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2" onclick="this.style.transform='scale(0.95)'; setTimeout(() =&gt; { alert('Consentimiento aceptado. Iniciando registro...'); }, 150);">
+                Acepto y deseo comenzar
+                <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<button class="w-full text-text-muted font-button-label text-button-label py-2 hover:text-primary transition-colors">
+                No estoy de acuerdo
+            </button>
+</div>
+<!-- Tip of the Day - Educational micro-moment -->
+<div class="bg-tip-bg border border-tip-border rounded-[24px] p-5 flex items-start gap-4 mt-4">
+<div class="bg-white p-2 rounded-xl shadow-sm">
+<span class="material-symbols-outlined text-tip-text" data-icon="lightbulb">lightbulb</span>
+</div>
+<div>
+<p class="font-header-title text-header-title text-tip-text mb-1">Información Útil</p>
+<p class="font-caption text-caption text-tip-text leading-snug">
+                    El seguimiento remoto nos permite estar más cerca de usted y detectar cambios en su salud de forma temprana.
+                </p>
+</div>
+</div>
+<!-- Footer -->
+<footer class="w-full px-padding-h py-section-gap mb-4 max-w-[400px] mx-auto bg-surface-container-low mt-stack-gap rounded-t-[24px]">
+<p class="font-caption text-caption text-center text-text-muted">
+                © Hospital Universitario - Advertencia: Esta aplicación no sustituye una emergencia médica. Llame al 112 si tiene dolor torácico.
+            </p>
+</footer>
+</main>
+<script>
+        // Micro-interaction for tactile feedback
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('touchstart', function() {
+                this.classList.add('opacity-80');
+            });
+            button.addEventListener('touchend', function() {
+                this.classList.remove('opacity-80');
+            });
+        });
+    </script>
+</body></html>

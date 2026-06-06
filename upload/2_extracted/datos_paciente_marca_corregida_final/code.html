@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            background: linear-gradient(135deg, #DBEAFE 0%, #D1FAE5 100%);
+            min-height: 100vh;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-shadow {
+            box-shadow: 0 10px 25px -5px rgba(15, 40, 100, 0.14), 0 8px 10px -6px rgba(15, 40, 100, 0.07);
+        }
+        input:focus {
+            outline: none;
+            border-color: #00288e;
+            box-shadow: 0 0 0 4px rgba(0, 40, 142, 0.1);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#006c4b",
+                        "status-yellow-low-border": "#CA8A04",
+                        "background-mid": "#E0F2FE",
+                        "on-tertiary-fixed": "#380d00",
+                        "on-primary-container": "#a8b8ff",
+                        "on-secondary-container": "#00714e",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#fbf8ff",
+                        "status-green-text": "#14532D",
+                        "on-surface-variant": "#444653",
+                        "status-green-bg": "#DCFCE7",
+                        "status-yellow-low-bg": "#FEF9C3",
+                        "primary-container": "#1e40af",
+                        "on-secondary-fixed": "#002114",
+                        "inverse-surface": "#2f3037",
+                        "on-error": "#ffffff",
+                        "border-soft": "#E2E8F0",
+                        "on-tertiary-fixed-variant": "#802a00",
+                        "status-yellow-low-text": "#713F12",
+                        "on-surface": "#1a1b22",
+                        "error": "#ba1a1a",
+                        "inverse-on-surface": "#f1f0fa",
+                        "surface-variant": "#e3e1eb",
+                        "secondary-container": "#64f9bc",
+                        "on-secondary-container": "#00714e",
+                        "on-tertiary-container": "#ffa583",
+                        "on-background": "#1a1b22",
+                        "secondary-fixed": "#68fcbf",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb59a",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#001453",
+                        "header-dark": "#1E3A8A",
+                        "tip-text": "#166534",
+                        "tertiary-fixed": "#ffdbce",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#dde1ff",
+                        "tertiary-container": "#872d00",
+                        "outline-variant": "#c4c5d5",
+                        "on-primary": "#ffffff",
+                        "outline": "#757684",
+                        "inverse-primary": "#b8c4ff",
+                        "surface-tint": "#3755c3",
+                        "surface-container-high": "#e8e7f1",
+                        "background": "#fbf8ff",
+                        "tertiary": "#611e00",
+                        "surface-container-lowest": "#ffffff",
+                        "status-red-text": "#7F1D1D",
+                        "surface-container": "#eeedf7",
+                        "surface": "#fbf8ff",
+                        "tip-bg": "#F0FDF4",
+                        "status-red-border": "#DC2626",
+                        "primary-fixed-dim": "#b8c4ff",
+                        "primary": "#00288e",
+                        "tip-border": "#BBF7D0",
+                        "status-yellow-high-bg": "#FEF3C7",
+                        "secondary-fixed-dim": "#45dfa4",
+                        "text-muted": "#475569",
+                        "on-secondary-fixed-variant": "#005137",
+                        "status-green-border": "#16A34A",
+                        "text-main": "#0F172A",
+                        "surface-dim": "#dad9e3",
+                        "status-yellow-high-text": "#78350F",
+                        "surface-container-highest": "#e3e1eb",
+                        "status-yellow-high-border": "#D97706",
+                        "background-start": "#DBEAFE",
+                        "on-primary-fixed-variant": "#173bab",
+                        "surface-container-low": "#f4f2fc",
+                        "status-red-bg": "#FEE2E2",
+                        "background-end": "#D1FAE5"
+                    },
+                    "fontFamily": {
+                        "header-subtitle": ["Nunito Sans"],
+                        "headline-md": ["Nunito Sans"],
+                        "header-title": ["Nunito Sans"],
+                        "body-lg": ["Nunito Sans"],
+                        "button-label": ["Nunito Sans"],
+                        "headline-lg": ["Nunito Sans"],
+                        "caption": ["Nunito Sans"]
+                    },
+                    "fontSize": {
+                        "header-subtitle": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                        "headline-md": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
+                        "header-title": ["14px", {"lineHeight": "16px", "fontWeight": "700"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "button-label": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "headline-lg": ["22px", {"lineHeight": "28px", "fontWeight": "800"}],
+                        "caption": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+                    },
+                    "spacing": {
+                        "stack-gap": "16px",
+                        "padding-h": "22px",
+                        "container-max-width": "400px",
+                        "section-gap": "24px",
+                        "padding-v": "18px"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center px-padding-h py-padding-v max-w-[400px] mx-auto left-1/2 -translate-x-1/2 bg-gradient-to-r from-header-dark to-primary-container shadow-md">
+<div class="flex items-center gap-3">
+<div class="bg-white/20 p-1.5 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-[20px]" data-icon="monitor_heart">monitor_heart</span>
+</div>
+<div class="flex flex-col">
+<h1 class="font-header-title text-header-title text-on-primary font-bold">Unidad de Cuidados Cardiológicos</h1>
+<span class="font-header-subtitle text-header-subtitle text-on-primary/70">Hospital Dr. T. Álvarez</span>
+</div>
+</div>
+</header>
+<main class="max-w-[400px] mx-auto pt-24 pb-32 px-padding-h min-h-screen">
+<!-- Welcome Card -->
+<div class="mb-section-gap animate-in fade-in slide-in-from-bottom-4 duration-700">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-2">Sus datos personales</h2>
+<p class="font-body-lg text-body-lg text-text-muted">Necesitamos identificarlo para registrar su control diario.</p>
+</div>
+<!-- Form Container -->
+<div class="bg-surface-container-lowest rounded-[28px] p-6 custom-shadow space-y-6">
+<!-- Field 1: Nombre y Apellido -->
+<div class="space-y-3">
+<label class="block font-bold text-[14px] uppercase tracking-wider text-text-muted px-1">NOMBRE Y APELLIDO</label>
+<div class="relative">
+<input aria-label="Nombre y Apellido" class="w-full bg-surface-container-low border-2 border-transparent focus:border-primary/20 rounded-[18px] px-5 py-4 font-body-lg text-text-main placeholder:text-outline/40 transition-all text-[18px]" placeholder="Ej: María García" type="text"/>
+</div>
+</div>
+<!-- Field 2: DNI -->
+<div class="space-y-3">
+<label class="block font-bold text-[14px] uppercase tracking-wider text-text-muted px-1">DNI</label>
+<div class="relative">
+<input aria-label="Documento Nacional de Identidad" class="w-full bg-surface-container-low border-2 border-transparent focus:border-primary/20 rounded-[18px] px-5 py-4 font-body-lg text-text-main placeholder:text-outline/40 transition-all text-[18px]" inputmode="numeric" placeholder="Ej: 28456789" type="number"/>
+</div>
+</div>
+<!-- CTA Button -->
+<button class="w-full bg-primary text-on-primary py-5 rounded-[18px] font-button-label text-[18px] font-bold flex items-center justify-center gap-2 active:scale-95 transition-transform duration-200 mt-4 shadow-xl shadow-primary/25">
+                Continuar
+                <span class="material-symbols-outlined text-[24px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<!-- Tip of the Day -->
+<div class="mt-8 bg-tip-bg border border-tip-border rounded-[24px] p-5 flex gap-4">
+<div class="text-tip-text">
+<span class="material-symbols-outlined text-[32px]" data-icon="lightbulb" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+</div>
+<div>
+<p class="font-button-label text-tip-text mb-1 text-[16px]">Consejo de Identificación</p>
+<p class="font-caption text-caption text-tip-text/80 leading-relaxed text-[14px]">Mantener sus datos actualizados nos ayuda a brindarle una atención médica más precisa y segura.</p>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<div class="max-w-[400px] mx-auto px-padding-h mb-4">
+<p class="text-[11px] text-text-muted text-center leading-relaxed">
+        Este es un sistema de seguimiento preventivo. No es un servicio de demanda espontánea ni reemplaza la consulta médica.
+    </p>
+</div><footer class="w-full px-padding-h py-section-gap mb-24 max-w-[400px] mx-auto bg-transparent mt-stack-gap">
+<div class="flex flex-col items-center gap-4">
+<p class="font-caption text-[13px] text-text-muted text-center leading-relaxed">© Hospital Dr. T. Álvarez - Advertencia: Esta aplicación no sustituye una emergencia médica. Llame al 112 si tiene dolor torácico.</p>
+<div class="flex gap-6">
+<a class="font-caption text-[13px] text-text-muted hover:text-primary transition-colors underline" href="#">Privacidad</a>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 max-w-[400px] mx-auto left-1/2 -translate-x-1/2 bg-surface-container-lowest dark:bg-surface-dim border-t border-border-soft shadow-[0_-4px_12px_-1px_rgba(15,40,100,0.1)]">
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-2xl px-6 py-2 transition-transform active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[28px]" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-button-label text-[11px] mt-1 font-bold">Inicio</span>
+</button>
+<button class="flex flex-col items-center justify-center text-text-muted px-6 py-2 hover:bg-surface-container-low transition-transform active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[28px]" data-icon="equalizer">equalizer</span>
+<span class="font-button-label text-[11px] mt-1 font-bold">Progreso</span>
+</button>
+<button class="flex flex-col items-center justify-center text-text-muted px-6 py-2 hover:bg-surface-container-low transition-transform active:scale-95 duration-200">
+<span class="material-symbols-outlined text-[28px]" data-icon="medical_services">medical_services</span>
+<span class="font-button-label text-[11px] mt-1 font-bold">Equipo</span>
+</button>
+</nav>
+<script>
+        // Enhanced micro-interaction for senior accessibility
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.closest('.relative').parentElement.classList.add('translate-x-1');
+                input.closest('.relative').parentElement.style.transition = 'transform 0.2s ease-out';
+            });
+            input.addEventListener('blur', () => {
+                input.closest('.relative').parentElement.classList.remove('translate-x-1');
+            });
+        });
+    </script>
+</body></html>

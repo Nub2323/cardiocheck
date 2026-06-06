@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#1e40af",
+                        "surface": "#fbf8ff",
+                        "on-primary-container": "#a8b8ff",
+                        "status-red-border": "#DC2626",
+                        "on-primary-fixed-variant": "#173bab",
+                        "inverse-primary": "#b8c4ff",
+                        "primary": "#00288e",
+                        "on-secondary-fixed-variant": "#005137",
+                        "status-yellow-high-bg": "#FEF3C7",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#872d00",
+                        "surface-dim": "#dad9e3",
+                        "on-primary-fixed": "#001453",
+                        "tip-bg": "#F0FDF4",
+                        "tip-text": "#166534",
+                        "status-yellow-low-text": "#713F12",
+                        "secondary-fixed-dim": "#45dfa4",
+                        "status-green-text": "#14532D",
+                        "on-secondary-container": "#00714e",
+                        "border-soft": "#E2E8F0",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "status-yellow-high-border": "#D97706",
+                        "status-red-text": "#7F1D1D",
+                        "on-surface": "#1a1b22",
+                        "on-tertiary-fixed": "#380d00",
+                        "on-tertiary-fixed-variant": "#802a00",
+                        "primary-fixed-dim": "#b8c4ff",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#dde1ff",
+                        "secondary-fixed": "#68fcbf",
+                        "status-yellow-low-bg": "#FEF9C3",
+                        "text-main": "#0F172A",
+                        "status-green-border": "#16A34A",
+                        "surface-tint": "#3755c3",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f4f2fc",
+                        "tertiary-fixed": "#ffdbce",
+                        "status-yellow-low-border": "#CA8A04",
+                        "surface-container-high": "#e8e7f1",
+                        "on-secondary-fixed": "#002114",
+                        "inverse-surface": "#2f3037",
+                        "on-error-container": "#93000a",
+                        "tip-border": "#BBF7D0",
+                        "on-error": "#ffffff",
+                        "surface-container": "#eeedf7",
+                        "surface-bright": "#fbf8ff",
+                        "text-muted": "#475569",
+                        "tertiary-fixed-dim": "#ffb59a",
+                        "outline-variant": "#c4c5d5",
+                        "background": "#fbf8ff",
+                        "header-dark": "#1E3A8A",
+                        "secondary": "#006c4b",
+                        "on-tertiary-container": "#ffa583",
+                        "on-background": "#1a1b22",
+                        "status-green-bg": "#DCFCE7",
+                        "secondary-container": "#64f9bc",
+                        "background-mid": "#E0F2FE",
+                        "inverse-on-surface": "#f1f0fa",
+                        "status-yellow-high-text": "#78350F",
+                        "background-start": "#DBEAFE",
+                        "status-red-bg": "#FEE2E2",
+                        "background-end": "#D1FAE5",
+                        "on-surface-variant": "#444653",
+                        "surface-variant": "#e3e1eb",
+                        "outline": "#757684",
+                        "surface-container-highest": "#e3e1eb",
+                        "tertiary": "#611e00",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "padding-v": "18px",
+                        "padding-h": "22px",
+                        "container-max-width": "400px",
+                        "section-gap": "24px",
+                        "stack-gap": "16px"
+                    },
+                    "fontFamily": {
+                        "button-label": ["Nunito Sans"],
+                        "caption": ["Nunito Sans"],
+                        "headline-lg": ["Nunito Sans"],
+                        "body-lg": ["Nunito Sans"],
+                        "headline-md": ["Nunito Sans"],
+                        "header-title": ["Nunito Sans"],
+                        "header-subtitle": ["Nunito Sans"]
+                    },
+                    "fontSize": {
+                        "button-label": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "caption": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "headline-lg": ["22px", {"lineHeight": "28px", "fontWeight": "800"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
+                        "header-title": ["14px", {"lineHeight": "16px", "fontWeight": "700"}],
+                        "header-subtitle": ["11px", {"lineHeight": "14px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background: linear-gradient(135deg, #DBEAFE 0%, #E0F2FE 50%, #D1FAE5 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            font-family: 'Nunito Sans', sans-serif;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            min-height: 100vh;
+            background-color: #fbf8ff;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .main-card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(15, 40, 100, 0.14), 0 8px 10px -6px rgba(15, 40, 100, 0.07);
+        }
+        @keyframes heartbeat {
+          0% { transform: scale(1); }
+          15% { transform: scale(1.15); }
+          30% { transform: scale(1); }
+          45% { transform: scale(1.1); }
+          70% { transform: scale(1); }
+        }
+        .heart-beating {
+          display: block;
+          margin: 0 auto;
+          animation: heartbeat 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+          transform-origin: center;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface">
+<div class="app-container">
+<!-- Shared Component: TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center h-[64px] px-padding-h max-w-[400px] mx-auto bg-gradient-to-r from-header-dark to-primary-container shadow-[0_4px_12px_rgba(15,40,100,0.14)]">
+<div class="flex items-center gap-3">
+<div class="bg-white/20 p-1.5 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+<div class="flex flex-col">
+<span class="font-header-title text-header-title text-on-primary font-bold uppercase tracking-wide">Hosp. Dr. T. Álvarez</span>
+<span class="font-header-subtitle text-header-subtitle text-on-primary/70">Seguimiento Remoto Cardiológico</span>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow pt-[84px] px-padding-h pb-section-gap flex flex-col items-center justify-center text-center">
+<!-- Hero Section -->
+<div class="mb-section-gap">
+<div class="w-[80px] h-[80px] mx-auto mb-4">
+<svg class="heart-beating w-full h-full" viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<path d="M50 88.42s-36.42-21.2-36.42-43.26c0-12.18 9.87-22.05 22.05-22.05 6.1 0 11.62 2.47 15.62 6.47 4-4 9.52-6.47 15.62-6.47 12.18 0 22.05 9.87 22.05 22.05 0 22.06-36.42 43.26-36.42 43.26z" fill="#DC2626"></path>
+</svg>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-primary mb-4 px-4 leading-tight">Control Diario de Bienestar</h1><div class="mb-4 rounded-xl overflow-hidden shadow-md"><img alt="Hospital Dr. T. Álvarez" class="w-full h-auto block" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_1ACE4GRnl9Iu8oErGEax0RnEhH98qPL3dnZYRxHQthmj69WTjTIx6XKOPKpC_k2rKNKAM7600gSxZC2nVDLDsBwtRzoJh0oOKEawwurgXtVXQNKPrzIEdjjgY8uzl53rRc2PXIrBfa9WttOVUepbmwPEWfAWtLB9qL7vu8q_XrliNmtkWqlGX2WPRZnojpvmrucYTWWUFV6GiEWWcmNue1RRtxPJNg_HnpWXk2iW9nBlZp3MZmpYPQOaW0B7W6NHuch5q4NlpfXf"/></div>
+<p class="font-body-lg text-body-lg text-text-muted px-2">Este es un sistema de seguimiento remoto para pacientes de la Unidad de Cuidados Cardiológicos. Es fundamental que ante la presencia de falta de aire intensa, dolor de pecho o síntomas graves, no espere el control y concurra inmediatamente a la guardia o llame al 107.</p>
+</div>
+<!-- Action Card -->
+<div class="w-full bg-surface-container-lowest rounded-[24px] p-6 main-card-shadow border border-border-soft" id="status-card">
+<!-- Loading State placeholder -->
+<div class="py-4" id="checking-time">
+<div class="animate-pulse flex flex-col items-center space-y-4">
+<div class="h-4 bg-slate-200 rounded w-3/4"></div>
+<div class="h-12 bg-slate-200 rounded-[14px] w-full"></div>
+</div>
+</div>
+<!-- Enabled Content (Hidden by default) -->
+<div class="hidden space-y-stack-gap" id="enabled-content"><div class="bg-status-red-bg border border-status-red-border p-4 rounded-xl text-left flex gap-3 mb-4"><span class="material-symbols-outlined text-status-red-text shrink-0">warning</span><p class="font-caption text-caption text-status-red-text font-bold leading-tight">Si presenta síntomas graves, no espere: acuda a emergencias o llame al 107.</p></div>
+<p class="font-caption text-caption text-status-green-text font-semibold flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                        Horario de control disponible
+                    </p>
+<button class="w-full h-[56px] bg-primary text-on-primary font-button-label text-button-label rounded-[14px] active:scale-95 transition-all shadow-md">Empezar ➤</button>
+<p class="font-caption text-caption text-text-muted italic">
+                        Le tomará menos de 3 minutos completar sus datos.
+                    </p>
+</div>
+<!-- Disabled Content (Hidden by default) -->
+<div class="hidden flex flex-col gap-4" id="disabled-content">
+<div class="bg-status-yellow-low-bg border border-status-yellow-low-border p-4 rounded-xl text-left">
+<p class="font-caption text-caption text-status-yellow-low-text leading-relaxed">
+<strong class="block mb-1">⏰ Horario no disponible</strong>
+                            El horario de control es de 8:00 a 11:00 hs. Por favor, vuelva mañana por la mañana.
+                        </p>
+</div>
+<div class="bg-status-red-bg border border-status-red-border p-4 rounded-xl text-left flex gap-3"><span class="material-symbols-outlined text-status-red-text shrink-0 text-[32px]">emergency_home</span><div class="flex flex-col gap-1"><p class="font-button-label text-button-label text-status-red-text uppercase tracking-wide">Urgencia Médica</p><p class="font-caption text-caption text-status-red-text font-bold leading-tight">Ante falta de aire intensa o dolor de pecho, concurra inmediatamente a la guardia o llame al 107.</p></div></div>
+</div>
+</div>
+<!-- Tip of the day -->
+<div class="mt-section-gap w-full bg-tip-bg border border-tip-border p-4 rounded-[24px] text-left flex items-start gap-4">
+<span class="material-symbols-outlined text-tip-text text-[32px] mt-1" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+<div>
+<h3 class="font-button-label text-button-label text-tip-text mb-1">Consejo del día</h3>
+<p class="font-caption text-caption text-tip-text/80 leading-snug">
+                        Mantenerse hidratado es fundamental para su salud cardiovascular. Intente beber un vaso de agua antes de cada comida.
+                    </p>
+</div>
+</div>
+</main>
+<!-- Footer for Internal Access -->
+<footer class="mt-auto px-padding-h py-6 border-t border-border-soft bg-surface-container-low flex justify-center">
+<button class="flex items-center gap-2 text-outline font-caption text-caption py-2 px-4 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+                Equipo 🔐
+            </button>
+</footer>
+</div>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            
+            const checkingElem = document.getElementById('checking-time');
+            const enabledElem = document.getElementById('enabled-content');
+            const disabledElem = document.getElementById('disabled-content');
+
+            // Logic: Active between 8:00 and 11:00 (exclusive of 11:00:01)
+            const isControlTime = currentHour >= 8 && currentHour < 11;
+
+            // Artificial delay for "clinical feeling" check
+            setTimeout(() => {
+                checkingElem.classList.add('hidden');
+                if (isControlTime) {
+                    enabledElem.classList.remove('hidden');
+                } else {
+                    disabledElem.classList.remove('hidden');
+                }
+            }, 800);
+        });
+
+        // Micro-interaction for the start button
+        const startBtn = document.querySelector('#enabled-content button');
+        if(startBtn) {
+            startBtn.addEventListener('click', function() {
+                this.innerHTML = '<span class="flex items-center justify-center gap-2"><svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Cargando...</span>';
+                setTimeout(() => {
+                    alert('Navegando a la primera pregunta del chequeo...');
+                    location.reload(); // Just for demo reset
+                }, 1000);
+            });
+        }
+    </script>
+</body></html>

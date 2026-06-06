@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            background: linear-gradient(135deg, #DBEAFE 0%, #D1FAE5 100%);
+            min-height: 100vh;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+        }
+        .custom-shadow {
+            box-shadow: 0 10px 25px -5px rgba(15, 40, 100, 0.14), 0 8px 10px -6px rgba(15, 40, 100, 0.07);
+        }
+        input:focus {
+            outline: none;
+            border-color: #00288e;
+            box-shadow: 0 0 0 4px rgba(0, 40, 142, 0.1);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#006c4b",
+                        "status-yellow-low-border": "#CA8A04",
+                        "background-mid": "#E0F2FE",
+                        "on-tertiary-fixed": "#380d00",
+                        "on-primary-container": "#a8b8ff",
+                        "on-secondary-container": "#00714e",
+                        "error-container": "#ffdad6",
+                        "surface-bright": "#fbf8ff",
+                        "status-green-text": "#14532D",
+                        "on-surface-variant": "#444653",
+                        "status-green-bg": "#DCFCE7",
+                        "status-yellow-low-bg": "#FEF9C3",
+                        "primary-container": "#1e40af",
+                        "on-secondary-fixed": "#002114",
+                        "inverse-surface": "#2f3037",
+                        "on-error": "#ffffff",
+                        "border-soft": "#E2E8F0",
+                        "on-tertiary-fixed-variant": "#802a00",
+                        "status-yellow-low-text": "#713F12",
+                        "on-surface": "#1a1b22",
+                        "error": "#ba1a1a",
+                        "inverse-on-surface": "#f1f0fa",
+                        "surface-variant": "#e3e1eb",
+                        "secondary-container": "#64f9bc",
+                        "on-tertiary-container": "#ffa583",
+                        "on-background": "#1a1b22",
+                        "secondary-fixed": "#68fcbf",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb59a",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#001453",
+                        "header-dark": "#1E3A8A",
+                        "tip-text": "#166534",
+                        "tertiary-fixed": "#ffdbce",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#dde1ff",
+                        "tertiary-container": "#872d00",
+                        "outline-variant": "#c4c5d5",
+                        "on-primary": "#ffffff",
+                        "outline": "#757684",
+                        "inverse-primary": "#b8c4ff",
+                        "surface-tint": "#3755c3",
+                        "surface-container-high": "#e8e7f1",
+                        "background": "#fbf8ff",
+                        "tertiary": "#611e00",
+                        "surface-container-lowest": "#ffffff",
+                        "status-red-text": "#7F1D1D",
+                        "surface-container": "#eeedf7",
+                        "surface": "#fbf8ff",
+                        "tip-bg": "#F0FDF4",
+                        "status-red-border": "#DC2626",
+                        "primary-fixed-dim": "#b8c4ff",
+                        "primary": "#00288e",
+                        "tip-border": "#BBF7D0",
+                        "status-yellow-high-bg": "#FEF3C7",
+                        "secondary-fixed-dim": "#45dfa4",
+                        "text-muted": "#475569",
+                        "on-secondary-fixed-variant": "#005137",
+                        "status-green-border": "#16A34A",
+                        "text-main": "#0F172A",
+                        "surface-dim": "#dad9e3",
+                        "status-yellow-high-text": "#78350F",
+                        "surface-container-highest": "#e3e1eb",
+                        "status-yellow-high-border": "#D97706",
+                        "background-start": "#DBEAFE",
+                        "on-primary-fixed-variant": "#173bab",
+                        "surface-container-low": "#f4f2fc",
+                        "status-red-bg": "#FEE2E2",
+                        "background-end": "#D1FAE5"
+                    },
+                    "fontFamily": {
+                        "header-subtitle": ["Nunito Sans"],
+                        "headline-md": ["Nunito Sans"],
+                        "header-title": ["Nunito Sans"],
+                        "body-lg": ["Nunito Sans"],
+                        "button-label": ["Nunito Sans"],
+                        "headline-lg": ["Nunito Sans"],
+                        "caption": ["Nunito Sans"]
+                    },
+                    "fontSize": {
+                        "header-subtitle": ["14px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                        "header-title": ["18px", {"lineHeight": "22px", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                        "button-label": ["20px", {"lineHeight": "24px", "fontWeight": "700"}],
+                        "headline-lg": ["26px", {"lineHeight": "32px", "fontWeight": "800"}],
+                        "caption": ["15px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    },
+                    "spacing": {
+                        "stack-gap": "20px",
+                        "padding-h": "24px",
+                        "container-max-width": "400px",
+                        "section-gap": "32px",
+                        "padding-v": "22px"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background">
+<!-- Header: Optimized Blue with Large Icon -->
+<header class="fixed top-0 left-0 w-full z-50 flex flex-col items-center px-padding-h py-6 max-w-[400px] mx-auto left-1/2 -translate-x-1/2 bg-primary shadow-lg border-b border-white/10">
+<div class="flex flex-col items-center gap-4 text-center">
+<div class="bg-white/10 w-[80px] h-[80px] rounded-2xl flex items-center justify-center shadow-inner">
+<span class="material-symbols-outlined text-white text-[48px]" data-icon="favorite">favorite</span>
+</div>
+<div class="flex flex-col">
+<h1 class="font-header-title text-header-title text-on-primary font-extrabold uppercase tracking-tight">Unidad de Cuidados Cardiológicos</h1>
+<span class="font-header-subtitle text-header-subtitle text-on-primary/80">Hospital Álvarez</span>
+</div>
+</div>
+</header>
+<main class="max-w-[400px] mx-auto pt-[210px] px-padding-h min-h-screen pb-12 flex flex-col justify-between">
+<div class="flex-grow">
+<!-- Welcome Card -->
+<div class="mb-section-gap animate-in fade-in slide-in-from-bottom-4 duration-700 text-center">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-3">Datos del Paciente</h2>
+<p class="font-body-lg text-body-lg text-text-muted">Necesitamos identificarlo para registrar su control diario de forma segura.</p>
+</div>
+<!-- Form Container -->
+<div class="bg-surface-container-lowest rounded-[32px] p-8 custom-shadow space-y-8">
+<!-- Field 1: Nombre y Apellido -->
+<div class="space-y-3">
+<label class="block font-bold text-[16px] uppercase tracking-widest text-text-muted px-2">Nombre Completo</label>
+<div class="relative">
+<input aria-label="Nombre y Apellido" class="w-full bg-surface-container-low border-2 border-transparent focus:border-primary focus:bg-white rounded-[22px] px-6 py-5 font-body-lg text-text-main placeholder:text-outline/40 transition-all text-[20px]" placeholder="Ej: María García" type="text"/>
+</div>
+</div>
+<!-- Field 2: DNI -->
+<div class="space-y-3">
+<label class="block font-bold text-[16px] uppercase tracking-widest text-text-muted px-2">DNI / Documento</label>
+<div class="relative">
+<input aria-label="Documento Nacional de Identidad" class="w-full bg-surface-container-low border-2 border-transparent focus:border-primary focus:bg-white rounded-[22px] px-6 py-5 font-body-lg text-text-main placeholder:text-outline/40 transition-all text-[20px]" inputmode="numeric" placeholder="Ej: 28456789" type="number"/>
+</div>
+</div>
+<!-- CTA Button -->
+<button class="w-full bg-primary text-on-primary py-6 rounded-[22px] font-button-label text-[20px] font-bold flex items-center justify-center gap-3 active:scale-[0.98] transition-transform duration-200 mt-6 shadow-2xl shadow-primary/30">
+                    Continuar
+                    <span class="material-symbols-outlined text-[28px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Preventive Footer Note -->
+<footer class="mt-12 text-center">
+<p class="font-caption text-caption text-text-muted leading-relaxed px-4">
+                No reemplaza la consulta médica. <br/>
+<strong class="text-error">Emergencias: guardia · 107</strong>
+</p>
+</footer>
+</main>
+<script>
+        // Enhanced micro-interaction for senior accessibility
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.closest('.relative').parentElement.classList.add('scale-[1.02]');
+                input.closest('.relative').parentElement.style.transition = 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            });
+            input.addEventListener('blur', () => {
+                input.closest('.relative').parentElement.classList.remove('scale-[1.02]');
+            });
+        });
+    </script>
+</body></html>

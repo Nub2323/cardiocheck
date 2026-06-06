@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Hosp. Dr. T. Álvarez - Unidad de Cuidados Cardiológicos</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,400;0,600;0,700;0,800;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-lowest": "#ffffff",
+                    "outline-variant": "#c4c5d5",
+                    "tertiary": "#2d363a",
+                    "tertiary-fixed": "#dbe4ea",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-container": "#a8b8ff",
+                    "secondary": "#0060ac",
+                    "on-tertiary-fixed": "#141d21",
+                    "tertiary-container": "#434c51",
+                    "on-tertiary-container": "#b3bcc2",
+                    "on-background": "#0b1c30",
+                    "inverse-on-surface": "#eaf1ff",
+                    "surface-container-high": "#dce9ff",
+                    "surface-variant": "#d3e4fe",
+                    "on-secondary-fixed-variant": "#004883",
+                    "primary-fixed-dim": "#b8c4ff",
+                    "error-container": "#ffdad6",
+                    "on-error-container": "#93000a",
+                    "surface-dim": "#cbdbf5",
+                    "error": "#ba1a1a",
+                    "on-surface-variant": "#444653",
+                    "surface-bright": "#f8f9ff",
+                    "on-surface": "#0b1c30",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#a4c9ff",
+                    "secondary-container": "#64a8fe",
+                    "background": "#f8f9ff",
+                    "secondary-fixed": "#d4e3ff",
+                    "surface-tint": "#3755c3",
+                    "on-secondary-fixed": "#001c39",
+                    "primary-fixed": "#dde1ff",
+                    "tertiary-fixed-dim": "#bfc8ce",
+                    "primary-container": "#1e40af",
+                    "surface-container": "#e5eeff",
+                    "inverse-primary": "#b8c4ff",
+                    "on-error": "#ffffff",
+                    "outline": "#757684",
+                    "on-tertiary-fixed-variant": "#3f484d",
+                    "primary": "#00288e",
+                    "surface-container-highest": "#d3e4fe",
+                    "inverse-surface": "#213145",
+                    "surface-container-low": "#eff4ff",
+                    "on-primary-fixed": "#001453",
+                    "on-secondary-container": "#003c70",
+                    "on-secondary": "#ffffff",
+                    "surface": "#f8f9ff",
+                    "on-primary-fixed-variant": "#173bab"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-padding-desktop": "48px",
+                    "touch-target-min": "48px",
+                    "stack-gap": "24px",
+                    "section-gap": "48px",
+                    "unit": "8px",
+                    "container-padding-mobile": "24px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Nunito Sans"],
+                    "headline-lg": ["Nunito Sans"],
+                    "display": ["Nunito Sans"],
+                    "label-md": ["Nunito Sans"],
+                    "title-lg": ["Nunito Sans"],
+                    "body-md": ["Nunito Sans"],
+                    "body-lg": ["Nunito Sans"],
+                    "label-lg": ["Nunito Sans"],
+                    "headline-lg-mobile": ["Nunito Sans"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["26px", {"lineHeight": "32px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .glass-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      .gradient-bg {
+        background: radial-gradient(circle at top left, #f8f9ff 0%, #eff4ff 50%, #d4e3ff 100%);
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="gradient-bg min-h-screen flex flex-col font-body-md text-on-surface antialiased overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.05)] flex justify-between items-center px-container-padding-mobile md:px-container-padding-desktop py-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="monitor_heart">monitor_heart</span>
+<h1 class="font-display text-headline-md font-extrabold text-primary">Hosp. Dr. T. Álvarez</h1>
+</div>
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden border-2 border-primary-fixed">
+<img alt="Hospital Logo" class="w-full h-full object-cover" data-alt="A clean, minimalist medical logo for a hospital cardiology unit, featuring a stylized heartbeat icon in deep blue and white. The aesthetic is modern and clinical, set against a soft, bright background that emphasizes professional care and advanced medical technology. High-key lighting ensures a sense of cleanliness and authority." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9-a64kasU4yryevwT9D21kTOjGlInyH1nuh_OEvXCGUvfJ7F1mDoq9keQvPdnaEuJo1QFVsb3nakkXl3-qGku_d9cP4xYDHpdZrC9_-P39y3PGSGq91buPa9JDLW05Iju8HVT5zAgkLvasLxtYTayDcd-tY0j3q42I6aRdMsTSniMM8GF4CSMGFqFn0QCYOg2cXCyIRJRgSRg9AXGZ2NGKsAmmd6Osqz6X5HvroglAwu04PsFJ6DDOOewPgya9Amd6edDqxcIMD0J"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-32 pb-40 px-container-padding-mobile md:px-container-padding-desktop max-w-[1200px] mx-auto w-full flex flex-col items-center justify-center relative">
+<!-- Hero Section Asymmetric Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-section-gap w-full items-center">
+<!-- Text Content -->
+<div class="md:col-span-7 flex flex-col gap-stack-gap animate-fade-in">
+<div class="flex flex-col gap-2">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-primary-container text-on-primary-container text-label-lg w-fit">
+<span class="material-symbols-outlined text-[18px] mr-2" data-icon="verified_user">verified_user</span>
+                        Centro de Excelencia Cardiovascular
+                    </span>
+<h2 class="font-display text-headline-lg-mobile md:text-display text-primary leading-tight">
+                        Unidad de Cuidados Cardiológicos
+                    </h2>
+</div>
+<p class="font-body-lg text-on-surface-variant max-w-xl">
+                    Tecnología de vanguardia y calidez humana al servicio de su salud cardíaca. Monitoreo constante para asegurar su bienestar durante el proceso de recuperación.
+                </p>
+<!-- Action Button -->
+<div class="mt-4">
+<button class="bg-primary text-on-primary px-10 py-4 rounded-full font-label-lg shadow-[0_10px_20px_rgba(0,40,142,0.2)] hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center gap-3">
+                        Empezar
+                        <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Visual Asset (Bento-like Card) -->
+<div class="md:col-span-5 relative">
+<div class="glass-card rounded-xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-white/50 relative overflow-hidden group">
+<img alt="Cardiology Department" class="w-full h-80 object-cover rounded-lg group-hover:scale-105 transition-transform duration-700" data-alt="A serene, professional cardiology department within a high-end hospital. The lighting is soft and clinical, using a palette of whites, light blues, and soft grays. The scene features modern medical equipment and a calm, empathetic atmosphere reflecting advanced cardiac care. The overall mood is safe, clean, and technologically superior." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDVk_oJEdAdTrApw-4LNK11tLWKfODvjtzbvzEhNEtfJpQl2TVdQxr9tEwFdtV--VsdogbUsLvD1uQEt9z2mT4gFscFxPeC645HgB85MwXFVt22_olU18LTplgZyfMmPZFteXKR1rgiMxwzo32yS6TyJZOr_R4XDCbcrIZlWyicEUzUT10Af1duQmAJUbTfZmBEZfCTpTztLfhfB5MWdkRRW68aA3OyNF5-uXUTb1o2kw8qgTedsoAss4Uf71Xx5b0dxeseVp32sS1"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent flex items-end p-6">
+<div class="text-white">
+<p class="font-label-lg opacity-80 uppercase tracking-widest">Compromiso</p>
+<p class="font-headline-md">Cuidamos cada latido</p>
+</div>
+</div>
+</div>
+<!-- Float elements for depth -->
+<div class="absolute -top-6 -right-6 w-24 h-24 bg-secondary-container/30 blur-3xl rounded-full z-0"></div>
+<div class="absolute -bottom-10 -left-10 w-32 h-32 bg-primary-fixed/40 blur-3xl rounded-full z-0"></div>
+</div>
+</div>
+<!-- Danger Warning Section -->
+<section class="mt-section-gap w-full">
+<div class="bg-error-container border border-error/10 rounded-lg p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 shadow-sm">
+<div class="w-16 h-16 rounded-full bg-error flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-error text-3xl" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div class="text-center md:text-left flex-grow">
+<h3 class="font-title-lg text-on-error-container mb-2">Advertencia de Urgencia</h3>
+<p class="font-body-md text-on-error-container">
+                        Si tiene síntomas peligrosos (dolor de pecho intenso, falta de aire súbita o desmayos) <strong class="font-bold">no dude en ir a la guardia</strong> inmediatamente. Cada minuto cuenta.
+                    </p>
+</div>
+<button class="bg-error text-on-error px-6 py-3 rounded-full font-label-lg whitespace-nowrap hover:bg-error/90 transition-colors">
+                    Ver Guardias
+                </button>
+</div>
+</section>
+<!-- Informative Grid -->
+<section class="mt-section-gap w-full grid grid-cols-1 md:grid-cols-3 gap-stack-gap">
+<div class="glass-card rounded-lg p-8 flex flex-col gap-4 border border-white/40 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+</div>
+<h4 class="font-title-lg text-primary">Seguimiento</h4>
+<p class="font-body-md text-on-surface-variant">Acceda a su historial completo de mediciones y consultas post-operatorias.</p>
+</div>
+<div class="glass-card rounded-lg p-8 flex flex-col gap-4 border border-white/40 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+</div>
+<h4 class="font-title-lg text-primary">Pacientes</h4>
+<p class="font-body-md text-on-surface-variant">Gestione los perfiles de salud de su grupo familiar desde un solo lugar.</p>
+</div>
+<div class="glass-card rounded-lg p-8 flex flex-col gap-4 border border-white/40 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="lightbulb">lightbulb</span>
+</div>
+<h4 class="font-title-lg text-primary">Consejos</h4>
+<p class="font-body-md text-on-surface-variant">Reciba recomendaciones personalizadas para fortalecer su corazón diariamente.</p>
+</div>
+</section>
+</main>
+<!-- Footer Disclaimer -->
+<footer class="w-full py-8 px-container-padding-mobile md:px-container-padding-desktop bg-surface-container-low/50 backdrop-blur-sm border-t border-outline-variant/20 flex flex-col items-center gap-4 text-center">
+<p class="font-label-md text-outline max-w-2xl italic">
+            Esta aplicación es una herramienta de apoyo y monitoreo. El contenido aquí provisto <strong class="font-bold">no reemplaza la consulta médica profesional</strong>, el diagnóstico o el tratamiento presencial de su especialista.
+        </p>
+<p class="font-label-md text-outline-variant">
+            © 2024 Hospital Dr. Teodoro Álvarez • Buenos Aires, Argentina
+        </p>
+</footer>
+<!-- BottomNavBar (Only Mobile Filter Applied) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-surface/80 backdrop-blur-xl shadow-[0_-10px_30px_rgba(0,0,0,0.05)] rounded-t-lg">
+<a class="flex flex-col items-center justify-center text-outline px-4 py-1 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="notifications_active">notifications_active</span>
+<span class="font-label-md text-label-md">Alertas</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline px-4 py-1 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-md text-label-md">Pacientes</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-md text-label-md">Inicio</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline px-4 py-1 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-label-md text-label-md">Historial</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline px-4 py-1 hover:bg-surface-container-high transition-colors active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Ajustes</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions and subtle effects
+        document.addEventListener('mousemove', (e) => {
+            const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+            const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+            
+            // Subtle parallax for floating blur elements (implied)
+            const blurs = document.querySelectorAll('.blur-3xl');
+            blurs.forEach((blur, index) => {
+                const factor = (index + 1) * 2;
+                blur.style.transform = `translate(${moveX * factor}px, ${moveY * factor}px)`;
+            });
+        });
+
+        // Simple Fade-in animation on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const main = document.querySelector('main');
+            main.style.opacity = '0';
+            main.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+            main.style.transform = 'translateY(10px)';
+            
+            setTimeout(() => {
+                main.style.opacity = '1';
+                main.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body></html>

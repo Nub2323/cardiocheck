@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "surface-container-highest": "#e3e1eb",
+                "tertiary-fixed": "#ffdbce",
+                "on-tertiary": "#ffffff",
+                "surface-dim": "#dad9e3",
+                "tip-bg": "#F0FDF4",
+                "tertiary": "#611e00",
+                "on-primary-fixed-variant": "#173bab",
+                "on-primary-container": "#a8b8ff",
+                "primary-fixed": "#dde1ff",
+                "outline": "#757684",
+                "status-yellow-high-text": "#78350F",
+                "status-yellow-high-border": "#D97706",
+                "text-main": "#0F172A",
+                "status-green-bg": "#DCFCE7",
+                "inverse-surface": "#2f3037",
+                "on-secondary-fixed": "#002114",
+                "tertiary-fixed-dim": "#ffb59a",
+                "primary-container": "#1e40af",
+                "border-soft": "#E2E8F0",
+                "on-error-container": "#93000a",
+                "text-muted": "#475569",
+                "on-primary-fixed": "#001453",
+                "error": "#ba1a1a",
+                "on-secondary": "#ffffff",
+                "on-secondary-container": "#00714e",
+                "inverse-primary": "#b8c4ff",
+                "on-surface": "#1a1b22",
+                "primary": "#00288e",
+                "on-tertiary-fixed": "#380d00",
+                "primary-fixed-dim": "#b8c4ff",
+                "secondary-fixed": "#68fcbf",
+                "outline-variant": "#c4c5d5",
+                "surface-container": "#eeedf7",
+                "surface-container-low": "#f4f2fc",
+                "inverse-on-surface": "#f1f0fa",
+                "background-mid": "#E0F2FE",
+                "on-surface-variant": "#444653",
+                "status-green-text": "#14532D",
+                "surface-variant": "#e3e1eb",
+                "tip-border": "#BBF7D0",
+                "on-tertiary-container": "#ffa583",
+                "secondary-fixed-dim": "#45dfa4",
+                "error-container": "#ffdad6",
+                "status-green-border": "#16A34A",
+                "surface-tint": "#3755c3",
+                "background-start": "#DBEAFE",
+                "surface-bright": "#fbf8ff",
+                "status-yellow-low-bg": "#FEF9C3",
+                "on-background": "#1a1b22",
+                "status-yellow-low-text": "#713F12",
+                "surface-container-high": "#e8e7f1",
+                "on-secondary-fixed-variant": "#005137",
+                "surface-container-lowest": "#ffffff",
+                "surface": "#fbf8ff",
+                "secondary": "#006c4b",
+                "on-tertiary-fixed-variant": "#802a00",
+                "on-error": "#ffffff",
+                "status-red-bg": "#FEE2E2",
+                "tip-text": "#166534",
+                "status-red-text": "#7F1D1D",
+                "tertiary-container": "#872d00",
+                "secondary-container": "#64f9bc",
+                "status-red-border": "#DC2626",
+                "header-dark": "#1E3A8A",
+                "background-end": "#D1FAE5",
+                "background": "#fbf8ff",
+                "status-yellow-high-bg": "#FEF3C7",
+                "on-primary": "#ffffff",
+                "status-yellow-low-border": "#CA8A04"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "stack-gap": "16px",
+                "container-max-width": "400px",
+                "padding-h": "22px",
+                "section-gap": "24px",
+                "padding-v": "18px"
+            },
+            "fontFamily": {
+                "header-subtitle": ["Nunito Sans"],
+                "headline-lg": ["Nunito Sans"],
+                "headline-md": ["Nunito Sans"],
+                "caption": ["Nunito Sans"],
+                "button-label": ["Nunito Sans"],
+                "header-title": ["Nunito Sans"],
+                "body-lg": ["Nunito Sans"]
+            },
+            "fontSize": {
+                "header-subtitle": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                "headline-lg": ["22px", {"lineHeight": "28px", "fontWeight": "800"}],
+                "headline-md": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
+                "caption": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                "button-label": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                "header-title": ["14px", {"lineHeight": "16px", "fontWeight": "700"}],
+                "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background: linear-gradient(135deg, #DBEAFE 0%, #E0F2FE 50%, #D1FAE5 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: #fbf8ff;
+            position: relative;
+            padding-top: 64px;
+            padding-bottom: 80px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .main-card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(15, 40, 100, 0.14), 0 8px 10px -6px rgba(15, 40, 100, 0.07);
+        }
+    </style>
+<style>
+        body {
+          min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="antialiased text-on-surface">
+<div class="app-container">
+<!-- Header from SCREEN_46 -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center h-[64px] px-padding-h max-w-[400px] mx-auto bg-gradient-to-r from-header-dark to-primary-container shadow-[0_4px_12px_rgba(15,40,100,0.14)]">
+<div class="flex items-center gap-3">
+<div class="bg-white/20 p-1.5 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+<div class="flex flex-col">
+<span class="font-header-title text-header-title text-on-primary font-bold uppercase tracking-wide">Hosp. Dr. T. Álvarez</span>
+<span class="font-header-subtitle text-header-subtitle text-on-primary/70">Seguimiento Remoto Cardiológico</span>
+</div>
+</div>
+</header>
+<main class="px-padding-h py-padding-v flex flex-col gap-section-gap">
+<!-- Progress Section -->
+<div class="flex flex-col gap-2 pt-4">
+<div class="flex justify-between items-end">
+<span class="font-caption text-caption text-text-muted">Progreso del chequeo</span>
+<span class="font-caption text-caption font-bold text-primary">80%</span>
+</div>
+<div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+<div class="bg-[#34D399] h-full rounded-full transition-all duration-700 ease-out" style="width: 80%"></div>
+</div>
+</div>
+<!-- Status Badge & Title -->
+<!-- Question Card -->
+<section class="bg-surface-container-lowest rounded-[24px] p-6 main-card-shadow border border-border-soft">
+<div class="flex flex-col items-center text-center gap-4">
+<div class="text-4xl mb-2">🛏️</div>
+<h2 class="font-headline-md text-headline-md text-text-main leading-tight">
+                        ¿Necesita más almohadas que antes para dormir sin ahogarse?
+                    </h2>
+<p class="font-body-lg text-body-lg text-text-muted">
+                        Díganos si ha notado cambios en su posición al descansar.
+                    </p>
+</div>
+</section>
+<!-- Interaction Options -->
+<div class="flex flex-col gap-stack-gap">
+<button class="w-full hover:bg-surface-container-low active:scale-95 transition-all duration-150 p-5 rounded-[14px] border border-border-soft shadow-sm flex items-center justify-between group">
+<span class="font-button-label text-button-label text-text-main">No, igual que siempre</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="w-full hover:bg-surface-container-low active:scale-95 transition-all duration-150 p-5 rounded-[14px] border border-border-soft shadow-sm flex items-center justify-between group">
+<span class="font-button-label text-button-label text-text-main">Sí, una almohada más</span>
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="w-full bg-white hover:bg-surface-container-low active:scale-95 transition-all duration-150 p-5 rounded-[14px] border-2 border-status-yellow-high-border/30 shadow-sm flex items-center justify-between group">
+<span class="font-button-label text-button-label text-status-yellow-high-text">Varias más / no puedo acostarme</span>
+<span class="material-symbols-outlined text-status-yellow-high-border" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+</button>
+</div>
+<!-- Comments Section - Patient Flow Styling -->
+<div class="flex flex-col gap-3 bg-surface-container-lowest rounded-[24px] p-6 main-card-shadow border border-border-soft">
+<label class="font-headline-md text-headline-md text-text-main" for="additional-comments">¿Desea agregar algún comentario o síntoma adicional?</label>
+<textarea class="w-full p-4 rounded-xl border border-outline-variant bg-surface-bright text-body-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder:text-text-muted" id="additional-comments" placeholder="Escriba aquí cualquier detalle que considere importante..." rows="4"></textarea>
+<p class="text-caption text-text-muted italic">Este espacio es opcional y nos ayuda a entender mejor su estado.</p>
+</div>
+<!-- Tip from SCREEN_46 style -->
+<div class="bg-tip-bg border border-tip-border rounded-[24px] p-5 flex gap-4">
+<div class="bg-white h-10 w-10 shrink-0 rounded-full flex items-center justify-center text-tip-text shadow-sm">
+<span class="material-symbols-outlined" data-icon="lightbulb" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-button-label text-button-label text-tip-text">Consejo para su descanso</h3>
+<p class="font-caption text-caption text-tip-text/80 leading-relaxed">
+                        Si siente falta de aire al estar acostado, es importante informarlo. Intente descansar en una posición cómoda.
+                    </p>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+</div>
+<script>
+        // Simple micro-interaction for buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', function() {
+                const originalBg = this.classList.contains('bg-white') ? 'bg-white' : '';
+                if(originalBg) {
+                    this.classList.replace('bg-white', 'bg-primary-fixed');
+                    setTimeout(() => {
+                        this.classList.replace('bg-primary-fixed', 'bg-white');
+                    }, 200);
+                }
+            });
+        });
+
+        // Atmosphere effect: subtle pulse on the status badge
+        const badge = document.querySelector('.animate-pulse');
+        if (badge) {
+            setInterval(() => {
+                badge.style.opacity = badge.style.opacity === '0.5' ? '1' : '0.5';
+            }, 1000);
+        }
+    </script>
+</body></html>

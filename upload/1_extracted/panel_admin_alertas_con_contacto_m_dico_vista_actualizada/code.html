@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200;0,300;0,400;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,600;1,700;1,800;1,900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Nunito Sans', sans-serif;
+            background: linear-gradient(135deg, #DBEAFE 0%, #E0F2FE 50%, #D1FAE5 100%);
+            min-height: 100vh;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-container": "#a8b8ff",
+                      "on-primary": "#ffffff",
+                      "background-end": "#D1FAE5",
+                      "on-surface": "#1a1b22",
+                      "surface": "#fbf8ff",
+                      "on-tertiary": "#ffffff",
+                      "surface-dim": "#dad9e3",
+                      "surface-container-highest": "#e3e1eb",
+                      "tip-border": "#BBF7D0",
+                      "outline": "#757684",
+                      "background-mid": "#E0F2FE",
+                      "on-secondary-fixed": "#002114",
+                      "secondary-fixed-dim": "#45dfa4",
+                      "secondary": "#006c4b",
+                      "status-red-bg": "#FEE2E2",
+                      "tip-text": "#166534",
+                      "tip-bg": "#F0FDF4",
+                      "on-primary-fixed": "#001453",
+                      "status-green-text": "#14532D",
+                      "status-yellow-low-border": "#CA8A04",
+                      "secondary-fixed": "#68fcbf",
+                      "status-red-border": "#DC2626",
+                      "on-secondary": "#ffffff",
+                      "on-error": "#ffffff",
+                      "background": "#fbf8ff",
+                      "on-error-container": "#93000a",
+                      "status-yellow-high-text": "#78350F",
+                      "inverse-surface": "#2f3037",
+                      "inverse-primary": "#b8c4ff",
+                      "inverse-on-surface": "#f1f0fa",
+                      "surface-variant": "#e3e1eb",
+                      "status-yellow-low-text": "#713F12",
+                      "on-secondary-fixed-variant": "#005137",
+                      "status-yellow-high-border": "#D97706",
+                      "surface-bright": "#fbf8ff",
+                      "on-tertiary-fixed": "#380d00",
+                      "on-tertiary-container": "#ffa583",
+                      "on-background": "#1a1b22",
+                      "tertiary-fixed-dim": "#ffb59a",
+                      "primary-fixed-dim": "#b8c4ff",
+                      "on-tertiary-fixed-variant": "#802a00",
+                      "status-yellow-high-bg": "#FEF3C7",
+                      "secondary-container": "#64f9bc",
+                      "border-soft": "#E2E8F0",
+                      "status-yellow-low-bg": "#FEF9C3",
+                      "primary-fixed": "#dde1ff",
+                      "on-surface-variant": "#444653",
+                      "outline-variant": "#c4c5d5",
+                      "text-main": "#0F172A",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-container": "#872d00",
+                      "status-green-border": "#16A34A",
+                      "on-primary-fixed-variant": "#173bab",
+                      "on-secondary-container": "#00714e",
+                      "surface-container-low": "#f4f2fc",
+                      "surface-tint": "#3755c3",
+                      "text-muted": "#475569",
+                      "background-start": "#DBEAFE",
+                      "tertiary": "#611e00",
+                      "primary": "#00288e",
+                      "surface-container-high": "#e8e7f1",
+                      "error-container": "#ffdad6",
+                      "status-red-text": "#7F1D1D",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed": "#ffdbce",
+                      "primary-container": "#1e40af",
+                      "header-dark": "#1E3A8A",
+                      "status-green-bg": "#DCFCE7",
+                      "surface-container": "#eeedf7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "padding-h": "22px",
+                      "container-max-width": "400px",
+                      "padding-v": "18px",
+                      "stack-gap": "16px",
+                      "section-gap": "24px"
+              },
+              "fontFamily": {
+                      "headline-lg": ["Nunito Sans"],
+                      "header-subtitle": ["Nunito Sans"],
+                      "headline-md": ["Nunito Sans"],
+                      "button-label": ["Nunito Sans"],
+                      "header-title": ["Nunito Sans"],
+                      "body-lg": ["Nunito Sans"],
+                      "caption": ["Nunito Sans"]
+              },
+              "fontSize": {
+                      "headline-lg": ["22px", {"lineHeight": "28px", "fontWeight": "800"}],
+                      "header-subtitle": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                      "headline-md": ["18px", {"lineHeight": "24px", "fontWeight": "700"}],
+                      "button-label": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                      "header-title": ["14px", {"lineHeight": "16px", "fontWeight": "700"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "caption": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="flex flex-col items-center">
+<!-- Top App Bar -->
+<header class="fixed top-0 left-0 w-full z-50 flex items-center h-[64px] px-padding-h max-w-container-max-width mx-auto bg-gradient-to-r from-header-dark to-primary-container shadow-[0_4px_12px_rgba(15,40,100,0.14)] left-1/2 -translate-x-1/2">
+<div class="flex items-center gap-3 w-full">
+<div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary" data-icon="favorite" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+<div class="flex flex-col">
+<h1 class="font-header-title text-header-title text-on-primary font-bold">Hosp. Dr. T. Álvarez</h1>
+<p class="font-header-subtitle text-header-subtitle text-on-primary/70">Panel de Enfermería</p>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="w-full max-w-container-max-width mt-[64px] mb-[80px] px-padding-h pt-section-gap flex flex-col gap-stack-gap custom-scrollbar overflow-y-auto">
+<!-- Header Section -->
+<section class="mb-4">
+<h2 class="font-headline-lg text-headline-lg text-primary">Alertas Pendientes</h2>
+<p class="font-body-lg text-body-lg text-text-muted mt-1">Casos críticos que requieren contacto inmediato.</p>
+</section>
+<!-- Alerta Roja (Urgente) -->
+<article class="bg-surface-container-lowest rounded-2xl p-5 shadow-[0_4px_12px_rgba(15,40,100,0.14),0_2px_4px_rgba(15,40,100,0.07)] border-l-[6px] border-status-red-border relative overflow-hidden group transition-all active:scale-[0.98]">
+<div class="flex justify-between items-start mb-3">
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-text-main">Marta Sánchez</span>
+<span class="font-caption text-caption text-text-muted">DNI: 10.992.102 • Hace 5 min</span>
+</div>
+<div class="px-3 py-1 rounded-full bg-status-red-bg border border-status-red-border">
+<span class="font-caption text-caption text-status-red-text font-bold uppercase tracking-tight">URGENTE</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-3 mb-4 flex items-start gap-2">
+<span class="material-symbols-outlined text-status-red-text mt-1 text-[18px]" data-icon="warning">warning</span>
+<p class="font-body-lg text-body-lg text-text-main italic">"Mucho peor / me cuesta hablar"</p>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<button class="flex flex-col items-center justify-center gap-1 bg-primary text-on-primary font-button-label text-[12px] py-2 rounded-[14px] transition-transform active:opacity-80">
+<span class="material-symbols-outlined text-[18px]" data-icon="chat">chat</span>
+                    WhatsApp
+                </button>
+<button class="flex flex-col items-center justify-center gap-1 border border-primary text-primary font-button-label text-[12px] py-2 rounded-[14px] transition-transform active:bg-primary/5">
+<span class="material-symbols-outlined text-[18px]" data-icon="mail">mail</span>
+                    Email
+                </button>
+<button class="flex flex-col items-center justify-center gap-1 bg-secondary text-on-secondary font-button-label text-[12px] py-2 rounded-[14px] transition-transform active:opacity-80"><span class="material-symbols-outlined text-[18px]" data-icon="medical_services">medical_services</span>Médico</button>
+</div>
+</article>
+<!-- Alerta Amarillo Alto (Seguimiento) -->
+<article class="bg-surface-container-lowest rounded-2xl p-5 shadow-[0_4px_12px_rgba(15,40,100,0.14),0_2px_4px_rgba(15,40,100,0.07)] border-l-[6px] border-status-yellow-high-border relative overflow-hidden group transition-all active:scale-[0.98]">
+<div class="flex justify-between items-start mb-3">
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-text-main">Ricardo Gomez</span>
+<span class="font-caption text-caption text-text-muted">DNI: 14.782.331 • Hace 20 min</span>
+</div>
+<div class="px-3 py-1 rounded-full bg-status-yellow-high-bg border border-status-yellow-high-border">
+<span class="font-caption text-caption text-status-yellow-high-text font-bold uppercase tracking-tight">SEGUIMIENTO</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-3 mb-4 flex flex-col gap-2">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-status-yellow-high-border mt-1 text-[18px]" data-icon="trending_up">trending_up</span>
+<p class="font-body-lg text-body-lg text-text-main">Subí entre 1 y 2 kg</p>
+</div>
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-status-yellow-high-border mt-1 text-[18px]" data-icon="bed">bed</span>
+<p class="font-body-lg text-body-lg text-text-main">Necesita una almohada más</p>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<button class="flex flex-col items-center justify-center gap-1 bg-primary text-on-primary font-button-label text-[12px] py-2 rounded-[14px] transition-transform active:opacity-80">
+<span class="material-symbols-outlined text-[18px]" data-icon="chat">chat</span>
+                    WhatsApp
+                </button>
+<button class="flex flex-col items-center justify-center gap-1 border border-primary text-primary font-button-label text-[12px] py-2 rounded-[14px] transition-transform active:bg-primary/5">
+<span class="material-symbols-outlined text-[18px]" data-icon="mail">mail</span>
+                    Email
+                </button>
+<button class="flex flex-col items-center justify-center gap-1 bg-secondary text-on-secondary font-button-label text-[12px] py-2 rounded-[14px] transition-transform active:opacity-80"><span class="material-symbols-outlined text-[18px]" data-icon="medical_services">medical_services</span>Médico</button>
+</div>
+</article>
+<!-- Footer Guidance -->
+<footer class="mt-4 pb-8 flex flex-col items-center gap-2 opacity-60">
+<div class="w-12 h-1 bg-outline-variant rounded-full"></div>
+<p class="font-caption text-caption text-center">Su acción marca la alerta como gestionada.</p>
+</footer>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full z-50 flex justify-around items-center h-[80px] px-2 max-w-container-max-width mx-auto bg-surface-container-lowest border-t border-border-soft shadow-[0_-4px_10px_rgba(0,0,0,0.05)] rounded-t-xl">
+<!-- Alertas (Active) -->
+<a class="flex flex-col items-center justify-center text-primary font-bold active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="notifications_active" style="font-variation-settings: 'FILL' 1;">notifications_active</span>
+<span class="font-caption text-caption mt-1">Alertas</span>
+</a>
+<!-- Pacientes -->
+<a class="flex flex-col items-center justify-center text-outline hover:bg-surface-container-low transition-all p-2 rounded-xl active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-caption text-caption mt-1">Pacientes</span>
+</a>
+<!-- Historial -->
+<a class="flex flex-col items-center justify-center text-outline hover:bg-surface-container-low transition-all p-2 rounded-xl active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-caption text-caption mt-1">Historial</span>
+</a>
+<!-- Consejos -->
+<a class="flex flex-col items-center justify-center text-outline hover:bg-surface-container-low transition-all p-2 rounded-xl active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="lightbulb">lightbulb</span>
+<span class="font-caption text-caption mt-1">Consejos</span>
+</a>
+<!-- Ajustes -->
+<a class="flex flex-col items-center justify-center text-outline hover:bg-surface-container-low transition-all p-2 rounded-xl active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-caption text-caption mt-1">Ajustes</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interactions for buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'scale(0.95)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'scale(1)';
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'scale(1)';
+            });
+        });
+
+        // Simulating the management message interaction
+        const manageAlert = (alertCard) => {
+            alertCard.style.transition = 'all 0.4s ease-out';
+            alertCard.style.transform = 'translateX(100%)';
+            alertCard.style.opacity = '0';
+            setTimeout(() => {
+                alertCard.style.display = 'none';
+            }, 400);
+        };
+    </script>
+</body></html>
