@@ -65,3 +65,10 @@ model Question {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
+
+model AppSetting {
+  key       String   @id // e.g. "whatsapp_number", "doctor_phone", "doctor_email", "app_name"
+  value     String
+  label     String   // Human-readable label for the admin UI
+  updatedAt DateTime @updatedAt
+}

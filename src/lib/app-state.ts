@@ -12,6 +12,7 @@ export type ScreenId =
   | 'admin'
   | 'admin-patients'
   | 'admin-questions'
+  | 'admin-settings'
   | 'history'
 
 export type AnswerSeverity = 'green' | 'neutral' | 'yellow-low' | 'yellow' | 'yellow-high' | 'red'

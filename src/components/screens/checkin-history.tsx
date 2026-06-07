@@ -79,6 +79,15 @@ export function CheckinHistoryScreen() {
       />
 
       <main className="flex-1 overflow-y-auto px-4 pb-24 pt-5">
+        {/* Back button */}
+        <button
+          onClick={() => setScreen('flow')}
+          className="mb-4 flex items-center gap-1 text-[12px] font-semibold text-[#00288e] transition-all active:scale-95"
+        >
+          <MaterialIcon name="arrow_back" size={16} />
+          Volver
+        </button>
+
         {/* Title */}
         <div className="mb-5">
           <h2 className="mb-1 text-lg font-extrabold text-[#0F172A]">

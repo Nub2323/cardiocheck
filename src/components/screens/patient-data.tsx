@@ -97,6 +97,15 @@ export function PatientDataScreen() {
       />
 
       <main className="flex-1 overflow-y-auto px-4 pb-24 pt-5">
+        {/* Back button */}
+        <button
+          onClick={() => setScreen('welcome')}
+          className="mb-4 flex items-center gap-1 text-[12px] font-semibold text-[#00288e] transition-all active:scale-95"
+        >
+          <MaterialIcon name="arrow_back" size={16} />
+          Volver al inicio
+        </button>
+
         {/* Title */}
         <div className="mb-5">
           <h2

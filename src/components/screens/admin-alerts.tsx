@@ -68,6 +68,7 @@ export function AdminAlertsScreen() {
   const [alerts, setAlerts] = useState<AlertData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [appSettings, setAppSettings] = useState<Record<string, string>>({})
 
   const fetchAlerts = useCallback(async () => {
     setLoading(true)
@@ -87,9 +88,22 @@ export function AdminAlertsScreen() {
     }
   }, [])
 
+  const fetchSettings = useCallback(async () => {
+    try {
+      const res = await fetch('/api/settings')
+      if (res.ok) {
+        const data = await res.json()
+        setAppSettings(data.settings)
+      }
+    } catch {
+      // silent
+    }
+  }, [])
+
   useEffect(() => {
     void fetchAlerts()
-  }, [fetchAlerts])
+    void fetchSettings()
+  }, [fetchAlerts, fetchSettings])
 
   const handleDismiss = async (alertId: string) => {
     try {
@@ -107,15 +121,19 @@ export function AdminAlertsScreen() {
   }
 
   const handleWhatsApp = (patientName: string) => {
-    window.open(`https://wa.me/5491100000000?text=${encodeURIComponent(`Hola, contacto desde CardioCheck respecto al paciente ${patientName}.`)}`, '_blank')
+    const waNumber = appSettings.whatsapp_number || '5491100000000'
+    const alertMsg = appSettings.alert_message || 'Hola, contacto desde CardioCheck respecto al paciente'
+    window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(`${alertMsg} ${patientName}.`)}`, '_blank')
   }
 
   const handleEmail = (patientName: string) => {
-    window.open(`mailto:contacto@cardiocheck.app?subject=${encodeURIComponent(`Alerta de seguimiento - ${patientName}`)}&body=${encodeURIComponent(`Se ha generado una alerta de seguimiento para el paciente ${patientName}.`)}`, '_blank')
+    const email = appSettings.doctor_email || 'contacto@cardiocheck.app'
+    window.open(`mailto:${email}?subject=${encodeURIComponent(`Alerta de seguimiento - ${patientName}`)}&body=${encodeURIComponent(`Se ha generado una alerta de seguimiento para el paciente ${patientName}.`)}`, '_blank')
   }
 
   const handleCall = () => {
-    window.open('tel:+5491100000001', '_blank')
+    const phone = appSettings.doctor_phone || '+5491100000001'
+    window.open(`tel:${phone}`, '_blank')
   }
 
   const handleLogout = () => {
@@ -418,7 +436,7 @@ export function AdminAlertsScreen() {
           { label: 'Pacientes', icon: 'groups', active: false, onClick: () => setScreen('admin-patients') },
           { label: 'Preguntas', icon: 'quiz', active: false, onClick: () => setScreen('admin-questions') },
           { label: 'Inicio', icon: 'home', active: false, onClick: () => setScreen('welcome') },
-          { label: 'Ajustes', icon: 'settings', active: false, onClick: () => handleLogout() },
+          { label: 'Ajustes', icon: 'settings', active: false, onClick: () => setScreen('admin-settings') },
         ]}
       />
     </div>

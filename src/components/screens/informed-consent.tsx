@@ -28,6 +28,15 @@ export function InformedConsentScreen() {
       />
 
       <main className="flex-1 overflow-y-auto px-4 pb-8 pt-5">
+        {/* Back button */}
+        <button
+          onClick={() => setScreen('patient-data')}
+          className="mb-4 flex items-center gap-1 text-[12px] font-semibold text-[#00288e] transition-all active:scale-95"
+        >
+          <MaterialIcon name="arrow_back" size={16} />
+          Volver
+        </button>
+
         {/* Hero Image Card */}
         <div
           className="mb-4 overflow-hidden rounded-[20px]"

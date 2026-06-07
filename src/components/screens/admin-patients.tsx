@@ -119,7 +119,7 @@ export function AdminPatientsScreen() {
   }
 
   const handleLogout = () => {
-    setScreen('welcome')
+    setScreen('admin')
   }
 
   return (
@@ -374,13 +374,14 @@ export function AdminPatientsScreen() {
           </div>
         )}
 
-        {/* Logout */}
+        {/* Back to Admin */}
         <button
           onClick={handleLogout}
-          className="mt-4 w-full rounded-xl border-2 border-[#E2E8F0] px-4 py-3 text-[12px] font-semibold text-[#475569] transition-all active:scale-[0.97]"
-          style={{ minHeight: 44 }}
+          className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-[#E2E8F0] px-4 py-3 text-[13px] font-semibold text-[#475569] transition-all active:scale-[0.97]"
+          style={{ minHeight: 48 }}
         >
-          Cerrar sesión de administrador
+          <MaterialIcon name="arrow_back" size={16} />
+          Volver al Panel
         </button>
       </main>
 
@@ -390,7 +391,7 @@ export function AdminPatientsScreen() {
           { label: 'Pacientes', icon: 'groups', active: true, onClick: () => setScreen('admin-patients') },
           { label: 'Preguntas', icon: 'quiz', active: false, onClick: () => setScreen('admin-questions') },
           { label: 'Inicio', icon: 'home', active: false, onClick: () => setScreen('welcome') },
-          { label: 'Ajustes', icon: 'settings', active: false, onClick: () => handleLogout() },
+          { label: 'Ajustes', icon: 'settings', active: false, onClick: () => setScreen('admin-settings') },
         ]}
       />
     </div>
