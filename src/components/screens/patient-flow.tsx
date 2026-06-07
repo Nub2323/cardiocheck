@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
-import { useAppState, CHECKIN_QUESTIONS } from '@/lib/app-state'
+import React, { useState, useEffect, useCallback } from 'react'
+import { useAppState } from '@/lib/app-state'
 import { AppHeader } from '@/components/app-header'
 import { BottomNav } from '@/components/bottom-nav'
 import { MaterialIcon } from '@/components/icons'
@@ -20,17 +20,44 @@ function formatTimeWindow(): string {
 }
 
 export function PatientFlowScreen() {
-  const { setScreen, resetFlow } = useAppState()
+  const { setScreen, setCheckinQuestions, resetFlow } = useAppState()
   const [isInHours] = useState(() => isCheckinTime())
   const [loading, setLoading] = useState(false)
 
-  const handleStartCheckin = () => {
+  const loadQuestions = useCallback(async () => {
+    try {
+      const res = await fetch('/api/questions')
+      if (res.ok) {
+        const data = await res.json()
+        if (data.questions && data.questions.length > 0) {
+          setCheckinQuestions(data.questions)
+          return true
+        }
+        // No questions yet — seed defaults
+        const seedRes = await fetch('/api/questions', { method: 'POST' })
+        if (seedRes.ok) {
+          const retryRes = await fetch('/api/questions')
+          if (retryRes.ok) {
+            const retryData = await retryRes.json()
+            setCheckinQuestions(retryData.questions)
+            return true
+          }
+        }
+      }
+    } catch {
+      // fall through
+    }
+    return false
+  }, [setCheckinQuestions])
+
+  const handleStartCheckin = async () => {
     setLoading(true)
-    setTimeout(() => {
+    const ok = await loadQuestions()
+    if (ok) {
       resetFlow()
       setScreen('checkin')
-      setLoading(false)
-    }, 1200)
+    }
+    setLoading(false)
   }
 
   return (
@@ -163,14 +190,19 @@ export function PatientFlowScreen() {
 /* ---- Check-in Question Screen ---- */
 
 export function CheckinScreen() {
-  const { currentQuestion, answers, setCurrentQuestion, setAnswer, setScreen } = useAppState()
-  const question = CHECKIN_QUESTIONS[currentQuestion]
-  const totalQuestions = CHECKIN_QUESTIONS.length
-  const progress = ((currentQuestion + 1) / totalQuestions) * 100
+  const { currentQuestion, answers, checkinQuestions, setCurrentQuestion, setAnswer, setScreen } = useAppState()
+  const question = checkinQuestions[currentQuestion]
+  const totalQuestions = checkinQuestions.length
+  const progress = totalQuestions > 0 ? ((currentQuestion + 1) / totalQuestions) * 100 : 0
 
   // Derive selected option from stored answers, with local override capability
   const [localSelection, setLocalSelection] = useState<string | null>(null)
   const selectedOption = localSelection ?? answers[currentQuestion] ?? null
+
+  // Reset local selection when question changes
+  useEffect(() => {
+    setLocalSelection(null)
+  }, [currentQuestion])
 
   const handleSelect = (optionLabel: string, severity: AnswerSeverity) => {
     setLocalSelection(optionLabel)
@@ -181,7 +213,6 @@ export function CheckinScreen() {
     if (!selectedOption) return
     if (currentQuestion < totalQuestions - 1) {
       setCurrentQuestion(currentQuestion + 1)
-      setLocalSelection(null)
     } else {
       setScreen('comments')
     }
@@ -193,6 +224,14 @@ export function CheckinScreen() {
     } else {
       setScreen('flow')
     }
+  }
+
+  if (!question) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-[#475569]">Cargando preguntas...</p>
+      </div>
+    )
   }
 
   return (
@@ -224,6 +263,24 @@ export function CheckinScreen() {
             />
           </div>
         </div>
+
+        {/* Critical Question Banner */}
+        {question.isCritical && (
+          <div
+            className="mb-4 rounded-xl border-2 p-3"
+            style={{
+              backgroundColor: '#FEF2F2',
+              borderColor: '#FECACA',
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <MaterialIcon name="emergency" size={18} className="text-[#DC2626]" />
+              <p className="text-[11px] font-semibold text-[#7F1D1D]">
+                Pregunta crítica — si tiene algún problema, se le indicará concurrir a guardia
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Question Card */}
         <div

@@ -34,11 +34,12 @@ function deriveOverallSeverity(severities: string[]): string {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { patientId, answers, comment, overallSeverity } = body as {
+    const { patientId, answers, comment, overallSeverity, criticalAlert } = body as {
       patientId: string
-      answers: { questionIndex: number; question: string; answer: string; severity: string }[]
+      answers: { questionIndex: number; question: string; answer: string; severity: string; questionId?: string }[]
       comment?: string
       overallSeverity?: string
+      criticalAlert?: boolean // true if any critical question had a non-green answer
     }
 
     if (!patientId || !answers || answers.length === 0) {
@@ -51,9 +52,36 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Paciente no encontrado' }, { status: 404 })
     }
 
+    // Check if any critical question had a non-green/non-neutral answer
+    let needsGuardia = false
+    if (criticalAlert) {
+      needsGuardia = true
+    } else {
+      // Fallback: check against database critical questions
+      const activeQuestions = await db.question.findMany({
+        where: { isActive: true, isCritical: true },
+      })
+      const criticalQuestionIds = new Set(activeQuestions.map((q) => q.id))
+
+      for (const answer of answers) {
+        if (answer.questionId && criticalQuestionIds.has(answer.questionId)) {
+          const severityOrder = SEVERITY_ORDER[answer.severity] ?? 0
+          if (severityOrder >= 2) { // yellow-low or worse
+            needsGuardia = true
+            break
+          }
+        }
+      }
+    }
+
     // Derive overall severity if not provided
     const severities = answers.map((a) => a.severity)
-    const severity = overallSeverity || deriveOverallSeverity(severities)
+    let severity = overallSeverity || deriveOverallSeverity(severities)
+
+    // If needsGuardia, override severity to at least red
+    if (needsGuardia) {
+      severity = 'red'
+    }
 
     // Create check-in with answers
     const checkIn = await db.checkIn.create({
@@ -83,7 +111,11 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    return NextResponse.json({ checkIn }, { status: 201 })
+    return NextResponse.json({
+      checkIn,
+      needsGuardia,
+      severity,
+    }, { status: 201 })
   } catch (error) {
     console.error('Error creating check-in:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })

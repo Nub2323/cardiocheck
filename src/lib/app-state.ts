@@ -11,73 +11,25 @@ export type ScreenId =
   | 'pin'
   | 'admin'
   | 'admin-patients'
+  | 'admin-questions'
   | 'history'
 
 export type AnswerSeverity = 'green' | 'neutral' | 'yellow-low' | 'yellow' | 'yellow-high' | 'red'
 
-export interface CheckinQuestion {
-  id: number
-  emoji: string
-  question: string
-  options: { label: string; severity: AnswerSeverity }[]
+export interface CheckinOption {
+  label: string
+  severity: AnswerSeverity
 }
 
-export const CHECKIN_QUESTIONS: CheckinQuestion[] = [
-  {
-    id: 0,
-    emoji: '😊',
-    question: '¿Cómo se siente hoy en comparación a su última consulta?',
-    options: [
-      { label: 'Mejor que antes', severity: 'green' },
-      { label: 'Igual que antes', severity: 'neutral' },
-      { label: 'Peor que antes', severity: 'yellow' },
-      { label: 'Mucho peor / me cuesta hablar', severity: 'red' },
-    ],
-  },
-  {
-    id: 1,
-    emoji: '⚖️',
-    question: '¿Subió de peso desde su última consulta?',
-    options: [
-      { label: 'No subí', severity: 'green' },
-      { label: 'Subí menos de 1 kg', severity: 'neutral' },
-      { label: 'Subí entre 1 y 2 kg', severity: 'yellow' },
-      { label: 'Subí más de 2 kg', severity: 'red' },
-    ],
-  },
-  {
-    id: 2,
-    emoji: '🫁',
-    question: '¿Tiene dificultad para respirar?',
-    options: [
-      { label: 'No, me siento bien', severity: 'green' },
-      { label: 'Un poco al hacer esfuerzo', severity: 'yellow-low' },
-      { label: 'Sí, incluso al estar quieto', severity: 'yellow-high' },
-      { label: 'Me cuesta hablar por la falta de aire', severity: 'red' },
-    ],
-  },
-  {
-    id: 3,
-    emoji: '🦶',
-    question: '¿Notó hinchazón en los tobillos o piernas?',
-    options: [
-      { label: 'No', severity: 'green' },
-      { label: 'Leve, solo de noche', severity: 'yellow-low' },
-      { label: 'Sí, durante el día', severity: 'yellow-high' },
-      { label: 'Muy hinchado', severity: 'red' },
-    ],
-  },
-  {
-    id: 4,
-    emoji: '🛏️',
-    question: '¿Necesita más almohadas que antes para dormir sin ahogarse?',
-    options: [
-      { label: 'No, igual que siempre', severity: 'neutral' },
-      { label: 'Sí, una almohada más', severity: 'yellow' },
-      { label: 'Varias más / no puedo acostarme', severity: 'yellow-high' },
-    ],
-  },
-]
+export interface CheckinQuestion {
+  id: string
+  order: number
+  emoji: string
+  question: string
+  options: CheckinOption[]
+  isCritical: boolean
+  category: string
+}
 
 // Severity ordering for deriving overall severity
 export const SEVERITY_ORDER: Record<string, number> = {
@@ -100,7 +52,12 @@ export function deriveOverallSeverity(severities: string[]): string {
       maxSeverity = s
     }
   }
-  return maxSeverity
+  if (maxOrder >= 5) return 'red'
+  if (maxOrder >= 4) return 'yellow-high'
+  if (maxOrder >= 3) return 'yellow'
+  if (maxOrder >= 2) return 'yellow'
+  if (maxOrder >= 1) return 'neutral'
+  return 'green'
 }
 
 interface AppState {
@@ -111,9 +68,12 @@ interface AppState {
   currentQuestion: number
   answers: Record<number, string>
   answerSeverities: Record<number, AnswerSeverity>
+  answerQuestionIds: Record<number, string> // track which question each answer belongs to
   additionalComment: string
   isAdmin: boolean
   consentAccepted: boolean
+  checkinQuestions: CheckinQuestion[] // dynamic questions loaded from API
+  needsGuardia: boolean // true if critical question had non-green answer
 
   setScreen: (screen: ScreenId) => void
   setPatientName: (name: string) => void
@@ -124,6 +84,8 @@ interface AppState {
   setAdditionalComment: (comment: string) => void
   setIsAdmin: (admin: boolean) => void
   setConsentAccepted: (accepted: boolean) => void
+  setCheckinQuestions: (questions: CheckinQuestion[]) => void
+  setNeedsGuardia: (needs: boolean) => void
   resetFlow: () => void
 }
 
@@ -135,9 +97,12 @@ export const useAppState = create<AppState>((set) => ({
   currentQuestion: 0,
   answers: {},
   answerSeverities: {},
+  answerQuestionIds: {},
   additionalComment: '',
   isAdmin: false,
   consentAccepted: false,
+  checkinQuestions: [],
+  needsGuardia: false,
 
   setScreen: (screen) => set({ currentScreen: screen }),
   setPatientName: (name) => set({ patientName: name }),
@@ -145,18 +110,32 @@ export const useAppState = create<AppState>((set) => ({
   setPatientId: (id) => set({ patientId: id }),
   setCurrentQuestion: (q) => set({ currentQuestion: q }),
   setAnswer: (questionIndex, answer, severity) =>
-    set((state) => ({
-      answers: { ...state.answers, [questionIndex]: answer },
-      answerSeverities: { ...state.answerSeverities, [questionIndex]: severity },
-    })),
+    set((state) => {
+      const question = state.checkinQuestions[questionIndex]
+      const isCritical = question?.isCritical ?? false
+      const isNonGreen = SEVERITY_ORDER[severity] >= 2 // yellow-low or worse
+
+      return {
+        answers: { ...state.answers, [questionIndex]: answer },
+        answerSeverities: { ...state.answerSeverities, [questionIndex]: severity },
+        answerQuestionIds: question
+          ? { ...state.answerQuestionIds, [questionIndex]: question.id }
+          : state.answerQuestionIds,
+        needsGuardia: state.needsGuardia || (isCritical && isNonGreen),
+      }
+    }),
   setAdditionalComment: (comment) => set({ additionalComment: comment }),
   setIsAdmin: (admin) => set({ isAdmin: admin }),
   setConsentAccepted: (accepted) => set({ consentAccepted: accepted }),
+  setCheckinQuestions: (questions) => set({ checkinQuestions: questions }),
+  setNeedsGuardia: (needs) => set({ needsGuardia: needs }),
   resetFlow: () =>
     set({
       currentQuestion: 0,
       answers: {},
       answerSeverities: {},
+      answerQuestionIds: {},
       additionalComment: '',
+      needsGuardia: false,
     }),
 }))

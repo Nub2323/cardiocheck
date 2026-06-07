@@ -268,6 +268,22 @@ export function AdminAlertsScreen() {
 
                   {/* Alert Body */}
                   <div className="p-4">
+                    {/* Guardia Banner for urgent alerts */}
+                    {info.severity === 'urgent' && (
+                      <div
+                        className="mb-3 flex items-center gap-2 rounded-xl border-2 p-3"
+                        style={{
+                          backgroundColor: '#FEF2F2',
+                          borderColor: '#DC2626',
+                        }}
+                      >
+                        <MaterialIcon name="emergency" size={18} className="shrink-0 text-[#DC2626]" />
+                        <p className="text-[11px] font-bold text-[#991B1B]">
+                          PACIENTE DEBE CONCURRIR A GUARDIA — Se detectó problema respiratorio/crítico
+                        </p>
+                      </div>
+                    )}
+
                     {/* Patient Info */}
                     <div className="mb-3">
                       <div className="flex items-center gap-2">
@@ -400,8 +416,8 @@ export function AdminAlertsScreen() {
         items={[
           { label: 'Alertas', icon: 'notifications', active: true, onClick: () => setScreen('admin') },
           { label: 'Pacientes', icon: 'groups', active: false, onClick: () => setScreen('admin-patients') },
-          { label: 'Historial', icon: 'history', active: false, onClick: () => setScreen('admin') },
-          { label: 'Consejos', icon: 'lightbulb', active: false, onClick: () => setScreen('admin') },
+          { label: 'Preguntas', icon: 'quiz', active: false, onClick: () => setScreen('admin-questions') },
+          { label: 'Inicio', icon: 'home', active: false, onClick: () => setScreen('welcome') },
           { label: 'Ajustes', icon: 'settings', active: false, onClick: () => handleLogout() },
         ]}
       />

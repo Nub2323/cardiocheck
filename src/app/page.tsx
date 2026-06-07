@@ -12,6 +12,7 @@ import { AdminAlertsScreen } from '@/components/screens/admin-alerts'
 import { CheckinCompleteScreen } from '@/components/screens/checkin-complete'
 import { CheckinHistoryScreen } from '@/components/screens/checkin-history'
 import { AdminPatientsScreen } from '@/components/screens/admin-patients'
+import { AdminQuestionsScreen } from '@/components/screens/admin-questions'
 
 function ScreenRouter() {
   const { currentScreen } = useAppState()
@@ -37,6 +38,8 @@ function ScreenRouter() {
       return <AdminAlertsScreen />
     case 'admin-patients':
       return <AdminPatientsScreen />
+    case 'admin-questions':
+      return <AdminQuestionsScreen />
     case 'history':
       return <CheckinHistoryScreen />
     default:

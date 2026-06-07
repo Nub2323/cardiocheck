@@ -52,3 +52,16 @@ model AdminPin {
   pin   String @unique
   label String?
 }
+
+model Question {
+  id         String   @id @default(cuid())
+  order      Int      @default(0)
+  emoji      String   @default("❓")
+  question   String
+  options    String   // JSON array: [{label, severity}]
+  isActive   Boolean  @default(true)
+  isCritical Boolean  @default(false) // If true, any non-green answer → guardia alert
+  category   String   @default("general") // general, respiratory, cardiac, etc.
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

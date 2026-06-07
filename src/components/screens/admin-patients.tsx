@@ -388,8 +388,8 @@ export function AdminPatientsScreen() {
         items={[
           { label: 'Alertas', icon: 'notifications', active: false, onClick: () => setScreen('admin') },
           { label: 'Pacientes', icon: 'groups', active: true, onClick: () => setScreen('admin-patients') },
+          { label: 'Preguntas', icon: 'quiz', active: false, onClick: () => setScreen('admin-questions') },
           { label: 'Inicio', icon: 'home', active: false, onClick: () => setScreen('welcome') },
-          { label: 'Historial', icon: 'history', active: false, onClick: () => setScreen('admin') },
           { label: 'Ajustes', icon: 'settings', active: false, onClick: () => handleLogout() },
         ]}
       />

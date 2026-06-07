@@ -1,30 +1,29 @@
 'use client'
 
 import React, { useState } from 'react'
-import { useAppState, CHECKIN_QUESTIONS, deriveOverallSeverity } from '@/lib/app-state'
+import { useAppState, deriveOverallSeverity } from '@/lib/app-state'
 import { AppHeader } from '@/components/app-header'
 import { MaterialIcon } from '@/components/icons'
 import { TipCard } from '@/components/tip-card'
 
 export function AdditionalCommentsScreen() {
-  const { answers, answerSeverities, patientId, setAdditionalComment, setScreen } = useAppState()
+  const { answers, answerSeverities, answerQuestionIds, patientId, checkinQuestions, needsGuardia, setAdditionalComment, setScreen } = useAppState()
   const [comment, setComment] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  const progress = 100
 
   const handleFinish = async () => {
     setSubmitting(true)
     setError(null)
 
     try {
-      // Build answers array from store
-      const answersArray = CHECKIN_QUESTIONS.map((q, index) => ({
+      // Build answers array from dynamic questions
+      const answersArray = checkinQuestions.map((q, index) => ({
         questionIndex: index,
         question: q.question,
         answer: answers[index] || '',
         severity: answerSeverities[index] || 'green',
+        questionId: q.id,
       }))
 
       // Derive overall severity
@@ -41,6 +40,7 @@ export function AdditionalCommentsScreen() {
           answers: answersArray,
           comment: comment || null,
           overallSeverity,
+          criticalAlert: needsGuardia,
         }),
       })
 
@@ -77,18 +77,46 @@ export function AdditionalCommentsScreen() {
             <span className="text-[11px] font-semibold text-[#475569]">
               Paso final
             </span>
-            <span className="text-[11px] font-bold text-[#00288e]">{progress}%</span>
+            <span className="text-[11px] font-bold text-[#00288e]">100%</span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-[#E2E8F0]">
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
-                width: `${progress}%`,
+                width: '100%',
                 backgroundColor: '#00288e',
               }}
             />
           </div>
         </div>
+
+        {/* Guardia Warning */}
+        {needsGuardia && (
+          <div
+            className="mb-4 rounded-2xl border-2 p-4"
+            style={{
+              backgroundColor: '#FEF2F2',
+              borderColor: '#DC2626',
+            }}
+          >
+            <div className="flex items-start gap-3">
+              <div
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                style={{ backgroundColor: '#FEE2E2' }}
+              >
+                <MaterialIcon name="emergency" size={22} className="text-[#DC2626]" />
+              </div>
+              <div>
+                <p className="text-[13px] font-bold text-[#7F1D1D]">
+                  Se detectó un problema que requiere atención urgente
+                </p>
+                <p className="mt-1 text-[12px] text-[#7F1D1D]">
+                  Al finalizar, se le indicará que debe concurrir a la guardia más cercana. No ignore esta indicación.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Comments Title Card */}
         <div

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { useAppState, CHECKIN_QUESTIONS } from '@/lib/app-state'
+import { useAppState } from '@/lib/app-state'
 import { AppHeader } from '@/components/app-header'
 import { BottomNav } from '@/components/bottom-nav'
 import { MaterialIcon } from '@/components/icons'
@@ -233,7 +233,7 @@ export function CheckinHistoryScreen() {
                               style={{ backgroundColor: answerSeverityStyle.bg }}
                             >
                               <span className="text-[13px]">
-                                {CHECKIN_QUESTIONS[answer.questionIndex]?.emoji || '📋'}
+                                📋
                               </span>
                               <div className="flex-1">
                                 <p className="text-[11px] font-semibold text-[#475569]">
