@@ -28,14 +28,75 @@ const SETTING_COLORS: Record<string, { bg: string; color: string }> = {
   alert_message: { bg: '#FFE4E6', color: '#9F1239' },
 }
 
+// Generate a secure 4-digit PIN that avoids obvious patterns
+function generateSecurePin(): string {
+  const digits = '0123456789'
+  let pin = ''
+  // First digit: random 1-9 (avoid leading 0)
+  pin += digits[Math.floor(Math.random() * 9) + 1]
+  for (let i = 1; i < 4; i++) {
+    pin += digits[Math.floor(Math.random() * 10)]
+  }
+  // Reject obvious patterns and regenerate
+  const obvious = ['1234', '4321', '1111', '2222', '3333', '4444', '5555', '6666', '7777', '8888', '9999', '0000', '1212', '2121', '1313', '3131', '6969', '1122', '2211', '1001', '2002', '1357', '2468', '9876', '0123', '9999']
+  if (obvious.includes(pin)) return generateSecurePin()
+  // Reject sequential
+  const nums = pin.split('').map(Number)
+  const isSequential = nums.every((n, i) => i === 0 || n === nums[i - 1] + 1) || nums.every((n, i) => i === 0 || n === nums[i - 1] - 1)
+  if (isSequential) return generateSecurePin()
+  return pin
+}
+
+function generateSuggestions(): string[] {
+  const suggestions = new Set<string>()
+  while (suggestions.size < 4) {
+    suggestions.add(generateSecurePin())
+  }
+  return Array.from(suggestions)
+}
+
+// Strength indicator for a PIN
+function getPinStrength(pin: string): { score: number; label: string; color: string } {
+  if (pin.length < 4) return { score: 0, label: '', color: '' }
+
+  const obvious = ['1234', '4321', '1111', '2222', '3333', '4444', '5555', '6666', '7777', '8888', '9999', '0000', '1212', '2121', '1313', '3131', '1122', '2211', '1001', '2002', '1357', '2468', '0123', '9876', '6969', '7777', '5555']
+  if (obvious.includes(pin)) return { score: 1, label: 'Muy débil', color: '#DC2626' }
+
+  const nums = pin.split('').map(Number)
+  const allSame = nums.every(n => n === nums[0])
+  if (allSame) return { score: 1, label: 'Muy débil', color: '#DC2626' }
+
+  const isSequential = nums.every((n, i) => i === 0 || n === nums[i - 1] + 1) || nums.every((n, i) => i === 0 || n === nums[i - 1] - 1)
+  if (isSequential) return { score: 1, label: 'Muy débil', color: '#DC2626' }
+
+  const uniqueDigits = new Set(nums).size
+  if (uniqueDigits === 4) return { score: 4, label: 'Fuerte', color: '#16A34A' }
+  if (uniqueDigits === 3) return { score: 3, label: 'Buena', color: '#2563EB' }
+  if (uniqueDigits === 2) return { score: 2, label: 'Regular', color: '#D97706' }
+  return { score: 2, label: 'Regular', color: '#D97706' }
+}
+
 export function AdminSettingsScreen() {
   const { setScreen, setIsAdmin } = useAppState()
   const [settings, setSettings] = useState<SettingData[]>([])
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState<string | null>(null) // key being saved
+  const [saving, setSaving] = useState<string | null>(null)
   const [editValues, setEditValues] = useState<Record<string, string>>({})
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+
+  // PIN change state
+  const [showPinChange, setShowPinChange] = useState(false)
+  const [currentPin, setCurrentPin] = useState('')
+  const [newPin, setNewPin] = useState('')
+  const [confirmPin, setConfirmPin] = useState('')
+  const [pinSuggestions, setPinSuggestions] = useState<string[]>([])
+  const [pinSaving, setPinSaving] = useState(false)
+  const [pinError, setPinError] = useState<string | null>(null)
+  const [pinSuccess, setPinSuccess] = useState(false)
+  const [showCurrentPin, setShowCurrentPin] = useState(false)
+  const [showNewPin, setShowNewPin] = useState(false)
+  const [showConfirmPin, setShowConfirmPin] = useState(false)
 
   const fetchSettings = useCallback(async () => {
     setLoading(true)
@@ -91,6 +152,94 @@ export function AdminSettingsScreen() {
       setSaving(null)
     }
   }
+
+  const handlePinChange = async () => {
+    setPinError(null)
+    setPinSuccess(false)
+
+    if (!currentPin || currentPin.length !== 4) {
+      setPinError('Ingrese su PIN actual de 4 dígitos')
+      return
+    }
+    if (!newPin || newPin.length !== 4) {
+      setPinError('Ingrese el nuevo PIN de 4 dígitos')
+      return
+    }
+    if (newPin !== confirmPin) {
+      setPinError('El nuevo PIN y la confirmación no coinciden')
+      return
+    }
+    if (newPin === currentPin) {
+      setPinError('El nuevo PIN debe ser diferente al actual')
+      return
+    }
+
+    setPinSaving(true)
+    try {
+      // First verify current PIN
+      const verifyRes = await fetch('/api/admin-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: currentPin }),
+      })
+      const verifyData = await verifyRes.json()
+
+      if (!verifyData.valid) {
+        setPinError('El PIN actual es incorrecto')
+        setPinSaving(false)
+        return
+      }
+
+      // Get the PIN record ID
+      const listRes = await fetch('/api/admin-pin')
+      const listData = await listRes.json()
+      const pinRecord = listData.pins?.[0]
+
+      if (!pinRecord) {
+        setPinError('No se encontró el registro del PIN')
+        setPinSaving(false)
+        return
+      }
+
+      // Update PIN
+      const updateRes = await fetch('/api/admin-pin', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: pinRecord.id, newPin, label: 'default' }),
+      })
+
+      if (!updateRes.ok) {
+        setPinError('Error al actualizar el PIN')
+        setPinSaving(false)
+        return
+      }
+
+      setPinSuccess(true)
+      setCurrentPin('')
+      setNewPin('')
+      setConfirmPin('')
+      setPinSuggestions([])
+      setTimeout(() => {
+        setPinSuccess(false)
+        setShowPinChange(false)
+      }, 2000)
+    } catch {
+      setPinError('Error de conexión')
+    } finally {
+      setPinSaving(false)
+    }
+  }
+
+  const handleRefreshSuggestions = () => {
+    setPinSuggestions(generateSuggestions())
+  }
+
+  const handleSelectSuggestion = (suggestion: string) => {
+    setNewPin(suggestion)
+    setConfirmPin(suggestion)
+  }
+
+  const pinStrength = getPinStrength(newPin)
 
   const handleLogout = () => {
     setIsAdmin(false)
@@ -238,6 +387,7 @@ export function AdminSettingsScreen() {
         {/* PIN Management Section */}
         <div className="mt-6">
           <h3 className="mb-3 text-sm font-extrabold text-[#0F172A]">Seguridad</h3>
+
           <div
             className="overflow-hidden rounded-[16px] border"
             style={{
@@ -246,17 +396,293 @@ export function AdminSettingsScreen() {
               boxShadow: '0 4px 12px -2px rgba(15,40,100,0.08)',
             }}
           >
-            <div className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FEF3C7]">
-                  <MaterialIcon name="lock" size={18} className="text-[#78350F]" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-[13px] font-bold text-[#0F172A]">PIN de acceso</p>
-                  <p className="text-[10px] text-[#94A3B8]">El PIN actual es: 1234</p>
-                </div>
+            {/* PIN Header - Always visible */}
+            <button
+              onClick={() => setShowPinChange(!showPinChange)}
+              className="flex w-full items-center gap-3 p-4 text-left transition-colors active:bg-[#F8FAFC]"
+            >
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FEF3C7]">
+                <MaterialIcon name="lock" size={18} className="text-[#78350F]" />
               </div>
-            </div>
+              <div className="flex-1">
+                <p className="text-[13px] font-bold text-[#0F172A]">Cambiar PIN de acceso</p>
+                <p className="text-[10px] text-[#94A3B8]">Modifique la clave de acceso al panel</p>
+              </div>
+              <MaterialIcon
+                name={showPinChange ? 'expand_less' : 'expand_more'}
+                size={20}
+                className="text-[#94A3B8]"
+              />
+            </button>
+
+            {/* PIN Change Form - Expandable */}
+            {showPinChange && (
+              <div className="border-t border-[#E2E8F0] px-4 pb-4 pt-3">
+                {/* PIN Success */}
+                {pinSuccess && (
+                  <div
+                    className="mb-3 rounded-xl border-2 p-3"
+                    style={{ backgroundColor: '#DCFCE7', borderColor: '#86EFAC' }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <MaterialIcon name="check_circle" size={16} className="text-[#166534]" />
+                      <p className="text-[12px] font-semibold text-[#166534]">PIN actualizado correctamente</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* PIN Error */}
+                {pinError && (
+                  <div
+                    className="mb-3 rounded-xl border-2 p-3"
+                    style={{ backgroundColor: '#FEF2F2', borderColor: '#FECACA' }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <MaterialIcon name="error" size={16} className="text-[#DC2626]" />
+                      <p className="text-[12px] font-semibold text-[#DC2626]">{pinError}</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Current PIN */}
+                <div className="mb-3">
+                  <label className="mb-1.5 block text-[11px] font-bold text-[#475569]">
+                    PIN actual
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showCurrentPin ? 'text' : 'password'}
+                      inputMode="numeric"
+                      maxLength={4}
+                      value={currentPin}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '').slice(0, 4)
+                        setCurrentPin(val)
+                        setPinError(null)
+                      }}
+                      placeholder="Ingrese PIN actual"
+                      className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 pr-10 text-[14px] tracking-[0.3em] text-[#0F172A] focus:border-[#00288e] focus:outline-none focus:ring-2 focus:ring-[#00288e]/20"
+                      style={{ minHeight: 44 }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPin(!showCurrentPin)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1"
+                    >
+                      <MaterialIcon
+                        name={showCurrentPin ? 'visibility_off' : 'visibility'}
+                        size={18}
+                        className="text-[#94A3B8]"
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                {/* New PIN */}
+                <div className="mb-3">
+                  <label className="mb-1.5 block text-[11px] font-bold text-[#475569]">
+                    Nuevo PIN
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showNewPin ? 'text' : 'password'}
+                      inputMode="numeric"
+                      maxLength={4}
+                      value={newPin}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '').slice(0, 4)
+                        setNewPin(val)
+                        if (confirmPin && val !== confirmPin) {
+                          // keep confirm as-is
+                        }
+                        setPinError(null)
+                      }}
+                      placeholder="Ingrese nuevo PIN"
+                      className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 pr-10 text-[14px] tracking-[0.3em] text-[#0F172A] focus:border-[#00288e] focus:outline-none focus:ring-2 focus:ring-[#00288e]/20"
+                      style={{ minHeight: 44 }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPin(!showNewPin)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1"
+                    >
+                      <MaterialIcon
+                        name={showNewPin ? 'visibility_off' : 'visibility'}
+                        size={18}
+                        className="text-[#94A3B8]"
+                      />
+                    </button>
+                  </div>
+
+                  {/* PIN Strength indicator */}
+                  {newPin.length === 4 && (
+                    <div className="mt-2">
+                      <div className="flex items-center gap-2">
+                        <div className="flex flex-1 gap-1">
+                          {[1, 2, 3, 4].map((level) => (
+                            <div
+                              key={level}
+                              className="h-1.5 flex-1 rounded-full"
+                              style={{
+                                backgroundColor: level <= pinStrength.score ? pinStrength.color : '#E2E8F0',
+                              }}
+                            />
+                          ))}
+                        </div>
+                        <span
+                          className="text-[10px] font-bold"
+                          style={{ color: pinStrength.color }}
+                        >
+                          {pinStrength.label}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Confirm PIN */}
+                <div className="mb-3">
+                  <label className="mb-1.5 block text-[11px] font-bold text-[#475569]">
+                    Confirmar nuevo PIN
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmPin ? 'text' : 'password'}
+                      inputMode="numeric"
+                      maxLength={4}
+                      value={confirmPin}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '').slice(0, 4)
+                        setConfirmPin(val)
+                        setPinError(null)
+                      }}
+                      placeholder="Repita el nuevo PIN"
+                      className="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 pr-10 text-[14px] tracking-[0.3em] text-[#0F172A] focus:border-[#00288e] focus:outline-none focus:ring-2 focus:ring-[#00288e]/20"
+                      style={{
+                        minHeight: 44,
+                        borderColor: confirmPin && confirmPin !== newPin ? '#DC2626' : undefined,
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPin(!showConfirmPin)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1"
+                    >
+                      <MaterialIcon
+                        name={showConfirmPin ? 'visibility_off' : 'visibility'}
+                        size={18}
+                        className="text-[#94A3B8]"
+                      />
+                    </button>
+                  </div>
+                  {confirmPin.length > 0 && confirmPin !== newPin && (
+                    <p className="mt-1 text-[10px] font-semibold text-[#DC2626]">
+                      Los PINs no coinciden
+                    </p>
+                  )}
+                  {confirmPin.length === 4 && confirmPin === newPin && (
+                    <p className="mt-1 text-[10px] font-semibold text-[#16A34A]">
+                      Los PINs coinciden
+                    </p>
+                  )}
+                </div>
+
+                {/* Secure PIN Suggestions */}
+                <div className="mb-4">
+                  <div className="mb-2 flex items-center justify-between">
+                    <p className="text-[11px] font-bold text-[#475569]">
+                      Sugerencias de PIN seguro
+                    </p>
+                    <button
+                      onClick={handleRefreshSuggestions}
+                      className="flex items-center gap-1 text-[10px] font-semibold text-[#00288e]"
+                    >
+                      <MaterialIcon
+                        name="refresh"
+                        size={14}
+                        className={pinSuggestions.length > 0 ? '' : ''}
+                      />
+                      Generar
+                    </button>
+                  </div>
+                  {pinSuggestions.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {pinSuggestions.map((suggestion) => (
+                        <button
+                          key={suggestion}
+                          onClick={() => handleSelectSuggestion(suggestion)}
+                          className="flex items-center gap-1.5 rounded-xl border px-3 py-2 text-[14px] font-bold tracking-[0.2em] transition-all active:scale-[0.97]"
+                          style={{
+                            borderColor: newPin === suggestion ? '#00288e' : '#E2E8F0',
+                            backgroundColor: newPin === suggestion ? '#00288e08' : '#F8FAFC',
+                            color: newPin === suggestion ? '#00288e' : '#0F172A',
+                          }}
+                        >
+                          {suggestion}
+                          <MaterialIcon name="content_copy" size={12} className="text-[#94A3B8]" />
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div
+                      className="rounded-xl border border-dashed border-[#CBD5E1] p-3 text-center"
+                    >
+                      <p className="text-[10px] text-[#94A3B8]">
+                        Presione &quot;Generar&quot; para obtener PINs aleatorios seguros
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Security Tips */}
+                <div
+                  className="mb-4 rounded-xl border p-3"
+                  style={{ backgroundColor: '#FFFBEB', borderColor: '#FDE68A' }}
+                >
+                  <div className="flex items-start gap-2">
+                    <MaterialIcon name="shield" size={14} className="mt-0.5 shrink-0 text-[#D97706]" />
+                    <div className="text-[10px] leading-relaxed text-[#92400E]">
+                      <p className="mb-1 font-bold">Consejos de seguridad:</p>
+                      <ul className="ml-2 list-disc space-y-0.5">
+                        <li>Evite secuencias como 1234 o 4321</li>
+                        <li>No repita dígitos como 1111 o 2222</li>
+                        <li>Use dígitos variados y sin significado obvio</li>
+                        <li>Cambie el PIN periódicamente</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Save PIN Button */}
+                <button
+                  onClick={handlePinChange}
+                  disabled={
+                    pinSaving ||
+                    !currentPin ||
+                    currentPin.length !== 4 ||
+                    !newPin ||
+                    newPin.length !== 4 ||
+                    !confirmPin ||
+                    confirmPin.length !== 4 ||
+                    newPin !== confirmPin
+                  }
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3.5 text-[13px] font-bold text-white transition-all active:scale-[0.97] disabled:opacity-40"
+                  style={{ backgroundColor: '#00288e', minHeight: 48 }}
+                >
+                  {pinSaving ? (
+                    <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                  ) : (
+                    <>
+                      <MaterialIcon name="lock" size={16} />
+                      Cambiar PIN
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
