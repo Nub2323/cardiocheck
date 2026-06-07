@@ -37,10 +37,15 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      const registeredDate = new Date(patient.birthDate).toISOString().split('T')[0]
-      const providedDate = new Date(birthDate).toISOString().split('T')[0]
+      // Compare dates as YYYY-MM-DD strings to avoid timezone issues
+      // patient.birthDate is a Date object from Prisma, convert carefully
+      const pb = patient.birthDate instanceof Date ? patient.birthDate : new Date(patient.birthDate)
+      const registeredDate = `${pb.getUTCFullYear()}-${String(pb.getUTCMonth() + 1).padStart(2, '0')}-${String(pb.getUTCDate()).padStart(2, '0')}`
+      // birthDate from client is already YYYY-MM-DD format
+      const providedDate = String(birthDate).trim()
 
       if (registeredDate !== providedDate) {
+        console.log('Date mismatch:', { registeredDate, providedDate, raw: patient.birthDate })
         return NextResponse.json(
           { error: 'La fecha de nacimiento no coincide con nuestros registros. Verifique los datos o contacte al equipo médico.' },
           { status: 403 }

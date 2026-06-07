@@ -69,6 +69,11 @@ export function AdminPatientsScreen() {
       return
     }
 
+    if (!newBirthDate) {
+      setAddError('La fecha de nacimiento es requerida')
+      return
+    }
+
     setAdding(true)
     setAddError(null)
 
@@ -237,7 +242,7 @@ export function AdminPatientsScreen() {
                 <DatePicker
                   value={newBirthDate}
                   onChange={(date) => setNewBirthDate(date)}
-                  placeholder="Seleccionar fecha de nacimiento"
+                  placeholder="DD/MM/AAAA"
                   maxDate={new Date()}
                   label="Fecha de Nacimiento"
                 />
@@ -254,7 +259,7 @@ export function AdminPatientsScreen() {
               {/* Submit */}
               <button
                 onClick={() => void handleAddPatient()}
-                disabled={adding || !newName.trim() || !newDni.trim()}
+                disabled={adding || !newName.trim() || !newDni.trim() || !newBirthDate}
                 className="flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3.5 text-[14px] font-bold text-white transition-all active:scale-[0.97] disabled:opacity-40"
                 style={{
                   backgroundColor: '#00288e',

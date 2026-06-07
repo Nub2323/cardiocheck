@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useState, useRef } from 'react'
 
 interface DatePickerProps {
   value: string // YYYY-MM-DD format
@@ -12,103 +12,117 @@ interface DatePickerProps {
   label?: string
 }
 
-const MONTHS = [
-  { value: 1, label: 'Enero' },
-  { value: 2, label: 'Febrero' },
-  { value: 3, label: 'Marzo' },
-  { value: 4, label: 'Abril' },
-  { value: 5, label: 'Mayo' },
-  { value: 6, label: 'Junio' },
-  { value: 7, label: 'Julio' },
-  { value: 8, label: 'Agosto' },
-  { value: 9, label: 'Septiembre' },
-  { value: 10, label: 'Octubre' },
-  { value: 11, label: 'Noviembre' },
-  { value: 12, label: 'Diciembre' },
-]
-
+/**
+ * Simple date input: user types DD/MM/AAAA and slashes are auto-inserted.
+ * Internally stores YYYY-MM-DD for API compatibility.
+ */
 export function DatePicker({
   value,
   onChange,
+  placeholder = 'DD/MM/AAAA',
   error = false,
   disabled = false,
   maxDate,
   label,
 }: DatePickerProps) {
-  const currentYear = new Date().getFullYear()
-  const maxYear = maxDate ? maxDate.getFullYear() : currentYear
+  // Convert YYYY-MM-DD to DD/MM/AAAA for display
+  const toDisplay = (iso: string): string => {
+    if (!iso) return ''
+    const [y, m, d] = iso.split('-')
+    return `${d}/${m}/${y}`
+  }
 
-  // Parse current value
-  const selectedYear = value ? parseInt(value.split('-')[0], 10) : 0
-  const selectedMonth = value ? parseInt(value.split('-')[1], 10) : 0
-  const selectedDay = value ? parseInt(value.split('-')[2], 10) : 0
+  const [displayValue, setDisplayValue] = useState(value ? toDisplay(value) : '')
+  const [internalError, setInternalError] = useState<string | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  // Generate years list (newest first for easy scrolling to recent birth years)
-  const years = useMemo(() => {
-    const result: number[] = []
-    for (let y = maxYear; y >= 1920; y--) {
-      result.push(y)
-    }
-    return result
-  }, [maxYear])
+  const validateAndConvert = (display: string): { iso: string; error: string | null } => {
+    const digits = display.replace(/\D/g, '')
 
-  // Days in the selected month/year
-  const daysInMonth = useMemo(() => {
-    if (!selectedMonth || !selectedYear) return 31
-    return new Date(selectedYear, selectedMonth, 0).getDate()
-  }, [selectedYear, selectedMonth])
-
-  // Update date, keeping valid day
-  const updateDate = (year: number, month: number, day: number) => {
-    // If year or month not set, can't build date yet
-    if (!year && !month && !day) {
-      onChange('')
-      return
+    if (digits.length < 8) {
+      return { iso: '', error: digits.length > 0 ? 'Fecha incompleta' : null }
     }
 
-    // If we have at least year and month, calculate max days
-    if (year && month) {
-      const maxDays = new Date(year, month, 0).getDate()
-      day = Math.min(day || 1, maxDays)
+    const day = parseInt(digits.substring(0, 2), 10)
+    const month = parseInt(digits.substring(2, 4), 10)
+    const year = parseInt(digits.substring(4, 8), 10)
+
+    // Validate month
+    if (month < 1 || month > 12) {
+      return { iso: '', error: 'Mes inválido (01-12)' }
     }
 
-    if (year && month && day) {
-      // Check against maxDate
-      const date = new Date(year, month - 1, day)
-      if (maxDate && date > maxDate) {
-        // Clamp to maxDate
-        onChange(
-          `${maxDate.getFullYear()}-${String(maxDate.getMonth() + 1).padStart(2, '0')}-${String(maxDate.getDate()).padStart(2, '0')}`
-        )
-        return
+    // Validate day
+    const daysInMonth = new Date(year, month, 0).getDate()
+    if (day < 1 || day > daysInMonth) {
+      return { iso: '', error: `Día inválido (01-${daysInMonth})` }
+    }
+
+    // Validate year
+    if (year < 1900) {
+      return { iso: '', error: 'Año inválido' }
+    }
+
+    // Check maxDate
+    const date = new Date(year, month - 1, day)
+    if (maxDate && date > maxDate) {
+      return { iso: '', error: 'La fecha no puede ser futura' }
+    }
+
+    const iso = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+    return { iso, error: null }
+  }
+
+  const formatWithSlashes = (digits: string): string => {
+    if (digits.length <= 2) return digits
+    if (digits.length <= 4) return `${digits.substring(0, 2)}/${digits.substring(2)}`
+    return `${digits.substring(0, 2)}/${digits.substring(2, 4)}/${digits.substring(4, 8)}`
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value
+    const digits = raw.replace(/\D/g, '')
+
+    // Limit to 8 digits
+    const limited = digits.substring(0, 8)
+    const formatted = formatWithSlashes(limited)
+
+    setDisplayValue(formatted)
+    setInternalError(null)
+
+    // Only validate and emit when we have 8 digits
+    if (limited.length === 8) {
+      const result = validateAndConvert(formatted)
+      if (result.error) {
+        setInternalError(result.error)
+        onChange('')
+      } else {
+        onChange(result.iso)
       }
-      onChange(`${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`)
-    } else if (year && month) {
-      // Year and month selected but no day yet — keep partial
-      onChange(`${year}-${String(month).padStart(2, '0')}-01`)
     } else {
       onChange('')
     }
   }
 
-  const handleYearChange = (yearStr: string) => {
-    const year = yearStr ? parseInt(yearStr, 10) : 0
-    updateDate(year, selectedMonth, selectedDay)
+  const handleBlur = () => {
+    if (displayValue && displayValue.replace(/\D/g, '').length === 8) {
+      const result = validateAndConvert(displayValue)
+      if (result.error) {
+        setInternalError(result.error)
+      }
+    }
   }
 
-  const handleMonthChange = (monthStr: string) => {
-    const month = monthStr ? parseInt(monthStr, 10) : 0
-    updateDate(selectedYear, month, selectedDay)
-  }
+  // Sync external value changes (e.g. form reset)
+  React.useEffect(() => {
+    if (!value) {
+      setDisplayValue('')
+      setInternalError(null)
+    }
+  }, [value])
 
-  const handleDayChange = (dayStr: string) => {
-    const day = dayStr ? parseInt(dayStr, 10) : 0
-    updateDate(selectedYear, selectedMonth, day)
-  }
-
-  const selectClass = `w-full appearance-none rounded-xl border bg-[#F8FAFC] px-3 py-3 text-sm text-[#0F172A] transition-colors focus:border-[#00288e] focus:outline-none focus:ring-2 focus:ring-[#00288e]/20 disabled:opacity-50 ${
-    error ? 'border-[#DC2626]' : 'border-[#E2E8F0]'
-  }`
+  const hasError = error || !!internalError
+  const showError = internalError
 
   return (
     <div>
@@ -117,87 +131,34 @@ export function DatePicker({
           {label}
         </label>
       )}
-      <div className="grid grid-cols-3 gap-2">
-        {/* Day */}
-        <div className="relative">
-          <select
-            value={selectedDay || ''}
-            onChange={(e) => handleDayChange(e.target.value)}
-            disabled={disabled}
-            className={selectClass}
-            style={{ minHeight: 48 }}
-          >
-            <option value="" disabled>
-              Día
-            </option>
-            {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => (
-              <option key={d} value={d}>
-                {d}
-              </option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
-            <svg className="h-4 w-4 text-[#94A3B8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        </div>
-
-        {/* Month */}
-        <div className="relative">
-          <select
-            value={selectedMonth || ''}
-            onChange={(e) => handleMonthChange(e.target.value)}
-            disabled={disabled}
-            className={selectClass}
-            style={{ minHeight: 48 }}
-          >
-            <option value="" disabled>
-              Mes
-            </option>
-            {MONTHS.map((m) => (
-              <option key={m.value} value={m.value}>
-                {m.label}
-              </option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
-            <svg className="h-4 w-4 text-[#94A3B8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        </div>
-
-        {/* Year */}
-        <div className="relative">
-          <select
-            value={selectedYear || ''}
-            onChange={(e) => handleYearChange(e.target.value)}
-            disabled={disabled}
-            className={selectClass}
-            style={{ minHeight: 48 }}
-          >
-            <option value="" disabled>
-              Año
-            </option>
-            {years.map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
-            <svg className="h-4 w-4 text-[#94A3B8]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      {/* Preview of selected date */}
-      {value && (
+      <input
+        ref={inputRef}
+        type="text"
+        inputMode="numeric"
+        value={displayValue}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        placeholder={placeholder}
+        disabled={disabled}
+        className="w-full rounded-xl border bg-[#F8FAFC] px-4 py-3 text-[15px] text-[#0F172A] placeholder:text-[#94A3B8] focus:border-[#00288e] focus:outline-none focus:ring-2 focus:ring-[#00288e]/20 disabled:opacity-50"
+        style={{
+          minHeight: 50,
+          borderColor: hasError ? '#DC2626' : '#E2E8F0',
+          letterSpacing: displayValue.length > 0 ? '1px' : undefined,
+        }}
+        maxLength={10}
+        autoComplete="off"
+      />
+      {showError && (
+        <p className="mt-1.5 text-[11px] font-semibold text-[#DC2626]">{internalError}</p>
+      )}
+      {value && !showError && (
         <p className="mt-1.5 text-[11px] text-[#00288e]">
-          {selectedDay} de {MONTHS.find((m) => m.value === selectedMonth)?.label?.toLowerCase()} de {selectedYear}
+          {(() => {
+            const [y, m, d] = value.split('-')
+            const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
+            return `${parseInt(d)} de ${monthNames[parseInt(m) - 1]} de ${y}`
+          })()}
         </p>
       )}
     </div>

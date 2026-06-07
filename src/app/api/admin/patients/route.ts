@@ -37,11 +37,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Create patient
+    // Use noon UTC to avoid timezone shift issues with date-only strings
     const patient = await db.patient.create({
       data: {
         name: name.trim(),
         dni: dniDigits,
-        birthDate: birthDate ? new Date(birthDate) : null,
+        birthDate: birthDate ? new Date(birthDate + 'T12:00:00Z') : null,
       },
     })
 
