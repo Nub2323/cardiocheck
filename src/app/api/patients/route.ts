@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { supabase, supabaseAdmin } from '@/lib/supabase'
 
 /**
  * POST /api/patients — VERIFY a patient (NOT create).
@@ -18,10 +18,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Look up patient by DNI
-    const patient = await db.patient.findUnique({ where: { dni } })
+    // Look up patient by DNI using service role (admin can see all)
+    const { data: patient, error: dbError } = await supabaseAdmin
+      .from('patients')
+      .select('*')
+      .eq('dni', dni)
+      .single()
 
-    if (!patient) {
+    if (dbError || !patient) {
       return NextResponse.json(
         { error: 'No se encontró un paciente registrado con ese DNI. Si es paciente del sistema, solicite al equipo médico que lo registre.' },
         { status: 404 }
@@ -29,7 +33,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify birth date if the patient has one registered
-    if (patient.birthDate) {
+    if (patient.birth_date) {
       if (!birthDate) {
         return NextResponse.json(
           { error: 'Se requiere fecha de nacimiento para verificar su identidad.' },
@@ -37,15 +41,11 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      // Compare dates as YYYY-MM-DD strings to avoid timezone issues
-      // patient.birthDate is a Date object from Prisma, convert carefully
-      const pb = patient.birthDate instanceof Date ? patient.birthDate : new Date(patient.birthDate)
-      const registeredDate = `${pb.getUTCFullYear()}-${String(pb.getUTCMonth() + 1).padStart(2, '0')}-${String(pb.getUTCDate()).padStart(2, '0')}`
-      // birthDate from client is already YYYY-MM-DD format
+      // Compare dates as YYYY-MM-DD strings
+      const registeredDate = patient.birth_date // Already a date string from Supabase
       const providedDate = String(birthDate).trim()
 
       if (registeredDate !== providedDate) {
-        console.log('Date mismatch:', { registeredDate, providedDate, raw: patient.birthDate })
         return NextResponse.json(
           { error: 'La fecha de nacimiento no coincide con nuestros registros. Verifique los datos o contacte al equipo médico.' },
           { status: 403 }
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
         id: patient.id,
         name: patient.name,
         dni: patient.dni,
-        birthDate: patient.birthDate,
+        birthDate: patient.birth_date,
       },
       verified: true,
     })
@@ -77,23 +77,44 @@ export async function POST(request: NextRequest) {
  */
 export async function GET() {
   try {
-    const patients = await db.patient.findMany({
-      orderBy: { createdAt: 'desc' },
-      include: {
-        checkIns: {
-          orderBy: { createdAt: 'desc' },
-          take: 1,
-        },
-      },
-    })
+    // Get all patients
+    const { data: patients, error: pError } = await supabaseAdmin
+      .from('patients')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-    const result = patients.map((p) => ({
+    if (pError) throw pError
+
+    // Get latest check-in for each patient
+    const patientIds = patients.map((p: { id: string }) => p.id)
+
+    const { data: checkIns } = await supabaseAdmin
+      .from('check_ins')
+      .select('*')
+      .in('patient_id', patientIds)
+      .order('created_at', { ascending: false })
+
+    // Group latest check-in by patient
+    const latestByPatient: Record<string, unknown> = {}
+    for (const ci of (checkIns || [])) {
+      if (!latestByPatient[ci.patient_id]) {
+        latestByPatient[ci.patient_id] = {
+          id: ci.id,
+          patientId: ci.patient_id,
+          comment: ci.comment,
+          severity: ci.severity,
+          createdAt: ci.created_at,
+        }
+      }
+    }
+
+    const result = patients.map((p: { id: string; name: string; dni: string; birth_date: string; created_at: string }) => ({
       id: p.id,
       name: p.name,
       dni: p.dni,
-      birthDate: p.birthDate,
-      createdAt: p.createdAt,
-      latestCheckIn: p.checkIns[0] ?? null,
+      birthDate: p.birth_date,
+      createdAt: p.created_at,
+      latestCheckIn: latestByPatient[p.id] ?? null,
     }))
 
     return NextResponse.json({ patients: result })

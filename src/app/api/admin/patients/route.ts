@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { supabaseAdmin } from '@/lib/supabase'
 
 /**
  * POST /api/admin/patients — Register a new patient (admin only).
- * This is the ONLY way to create patients.
- * Body: { name, dni, birthDate (YYYY-MM-DD) }
  */
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +16,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate DNI format
     const dniDigits = dni.replace(/\D/g, '')
     if (dniDigits.length < 7 || dniDigits.length > 8) {
       return NextResponse.json(
@@ -28,7 +25,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if patient already exists
-    const existing = await db.patient.findUnique({ where: { dni: dniDigits } })
+    const { data: existing } = await supabaseAdmin
+      .from('patients')
+      .select('id, name')
+      .eq('dni', dniDigits)
+      .single()
+
     if (existing) {
       return NextResponse.json(
         { error: `Ya existe un paciente con DNI ${dniDigits}: ${existing.name}` },
@@ -37,16 +39,27 @@ export async function POST(request: NextRequest) {
     }
 
     // Create patient
-    // Use noon UTC to avoid timezone shift issues with date-only strings
-    const patient = await db.patient.create({
-      data: {
+    const { data: patient, error } = await supabaseAdmin
+      .from('patients')
+      .insert({
         name: name.trim(),
         dni: dniDigits,
-        birthDate: birthDate ? new Date(birthDate + 'T12:00:00Z') : null,
-      },
-    })
+        birth_date: birthDate || null,
+      })
+      .select()
+      .single()
 
-    return NextResponse.json({ patient }, { status: 201 })
+    if (error) throw error
+
+    return NextResponse.json({
+      patient: {
+        id: patient.id,
+        name: patient.name,
+        dni: patient.dni,
+        birthDate: patient.birth_date,
+        createdAt: patient.created_at,
+      },
+    }, { status: 201 })
   } catch (error) {
     console.error('Error creating patient:', error)
     return NextResponse.json(
@@ -58,7 +71,6 @@ export async function POST(request: NextRequest) {
 
 /**
  * DELETE /api/admin/patients — Remove a patient (admin only).
- * Body: { patientId }
  */
 export async function DELETE(request: NextRequest) {
   try {
@@ -72,7 +84,12 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    await db.patient.delete({ where: { id: patientId } })
+    const { error } = await supabaseAdmin
+      .from('patients')
+      .delete()
+      .eq('id', patientId)
+
+    if (error) throw error
 
     return NextResponse.json({ success: true })
   } catch (error) {

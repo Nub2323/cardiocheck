@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { supabaseAdmin } from '@/lib/supabase'
 
 // Severity ordering for deriving overall severity
 const SEVERITY_ORDER: Record<string, number> = {
@@ -22,7 +22,6 @@ function deriveOverallSeverity(severities: string[]): string {
       maxSeverity = s
     }
   }
-  // Map to simplified overall severity
   if (maxOrder >= 5) return 'red'
   if (maxOrder >= 4) return 'yellow-high'
   if (maxOrder >= 3) return 'yellow'
@@ -39,7 +38,7 @@ export async function POST(request: NextRequest) {
       answers: { questionIndex: number; question: string; answer: string; severity: string; questionId?: string }[]
       comment?: string
       overallSeverity?: string
-      criticalAlert?: boolean // true if any critical question had a non-green answer
+      criticalAlert?: boolean
     }
 
     if (!patientId || !answers || answers.length === 0) {
@@ -47,7 +46,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify patient exists
-    const patient = await db.patient.findUnique({ where: { id: patientId } })
+    const { data: patient } = await supabaseAdmin
+      .from('patients')
+      .select('id')
+      .eq('id', patientId)
+      .single()
+
     if (!patient) {
       return NextResponse.json({ error: 'Paciente no encontrado' }, { status: 404 })
     }
@@ -57,16 +61,18 @@ export async function POST(request: NextRequest) {
     if (criticalAlert) {
       needsGuardia = true
     } else {
-      // Fallback: check against database critical questions
-      const activeQuestions = await db.question.findMany({
-        where: { isActive: true, isCritical: true },
-      })
-      const criticalQuestionIds = new Set(activeQuestions.map((q) => q.id))
+      const { data: activeQuestions } = await supabaseAdmin
+        .from('questions')
+        .select('id')
+        .eq('is_active', true)
+        .eq('is_critical', true)
+
+      const criticalQuestionIds = new Set((activeQuestions || []).map((q: { id: string }) => q.id))
 
       for (const answer of answers) {
         if (answer.questionId && criticalQuestionIds.has(answer.questionId)) {
           const severityOrder = SEVERITY_ORDER[answer.severity] ?? 0
-          if (severityOrder >= 2) { // yellow-low or worse
+          if (severityOrder >= 2) {
             needsGuardia = true
             break
           }
@@ -83,36 +89,57 @@ export async function POST(request: NextRequest) {
       severity = 'red'
     }
 
-    // Create check-in with answers
-    const checkIn = await db.checkIn.create({
-      data: {
-        patientId,
+    // Create check-in
+    const { data: checkIn, error: ciError } = await supabaseAdmin
+      .from('check_ins')
+      .insert({
+        patient_id: patientId,
         comment: comment || null,
         severity,
-        answers: {
-          create: answers.map((a) => ({
-            questionIndex: a.questionIndex,
-            question: a.question,
-            answer: a.answer,
-            severity: a.severity,
-          })),
-        },
-      },
-      include: { answers: true },
-    })
+      })
+      .select()
+      .single()
+
+    if (ciError) throw ciError
+
+    // Create answers
+    const answersData = answers.map((a) => ({
+      check_in_id: checkIn.id,
+      question_index: a.questionIndex,
+      question: a.question,
+      answer: a.answer,
+      severity: a.severity,
+    }))
+
+    const { error: ansError } = await supabaseAdmin
+      .from('check_in_answers')
+      .insert(answersData)
+
+    if (ansError) throw ansError
 
     // Create alert if severity is yellow, yellow-high, or red
     if (['yellow', 'yellow-high', 'red'].includes(severity)) {
-      await db.alert.create({
-        data: {
-          checkInId: checkIn.id,
+      await supabaseAdmin
+        .from('alerts')
+        .insert({
+          check_in_id: checkIn.id,
           status: 'pending',
-        },
-      })
+        })
     }
 
     return NextResponse.json({
-      checkIn,
+      checkIn: {
+        id: checkIn.id,
+        patientId: checkIn.patient_id,
+        comment: checkIn.comment,
+        severity: checkIn.severity,
+        createdAt: checkIn.created_at,
+        answers: answersData.map((a, i) => ({
+          id: `${checkIn.id}-${i}`,
+          checkInId: checkIn.id,
+          ...a,
+        })),
+      },
       needsGuardia,
       severity,
     }, { status: 201 })
@@ -130,27 +157,49 @@ export async function GET(request: NextRequest) {
     // Limit to last 7 days
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-    sevenDaysAgo.setHours(0, 0, 0, 0)
+    const sevenDaysAgoISO = sevenDaysAgo.toISOString()
 
-    const where: Record<string, unknown> = {
-      createdAt: { gte: sevenDaysAgo },
-    }
+    let query = supabaseAdmin
+      .from('check_ins')
+      .select(`
+        *,
+        check_in_answers (*),
+        patients!inner (id, name, dni)
+      `)
+      .gte('created_at', sevenDaysAgoISO)
+      .order('created_at', { ascending: false })
+
     if (patientId) {
-      where.patientId = patientId
+      query = query.eq('patient_id', patientId)
     }
 
-    const checkIns = await db.checkIn.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        answers: true,
-        patient: {
-          select: { id: true, name: true, dni: true },
-        },
-      },
-    })
+    const { data: checkIns, error } = await query
 
-    return NextResponse.json({ checkIns })
+    if (error) throw error
+
+    // Transform to match the old API format
+    const result = (checkIns || []).map((ci: Record<string, unknown>) => ({
+      id: ci.id,
+      patientId: ci.patient_id,
+      comment: ci.comment,
+      severity: ci.severity,
+      createdAt: ci.created_at,
+      answers: (ci.check_in_answers || []).map((a: Record<string, unknown>) => ({
+        id: a.id,
+        checkInId: a.check_in_id,
+        questionIndex: a.question_index,
+        question: a.question,
+        answer: a.answer,
+        severity: a.severity,
+      })),
+      patient: {
+        id: (ci.patients as Record<string, unknown>)?.id,
+        name: (ci.patients as Record<string, unknown>)?.name,
+        dni: (ci.patients as Record<string, unknown>)?.dni,
+      },
+    }))
+
+    return NextResponse.json({ checkIns: result })
   } catch (error) {
     console.error('Error listing check-ins:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })

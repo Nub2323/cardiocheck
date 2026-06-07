@@ -1,27 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
-
-const DEFAULT_SETTINGS: { key: string; value: string; label: string }[] = [
-  { key: 'whatsapp_number', value: '5491100000000', label: 'WhatsApp del Médico (formato: 54911...)' },
-  { key: 'doctor_phone', value: '+5491100000001', label: 'Teléfono del Médico' },
-  { key: 'doctor_email', value: 'contacto@cardiocheck.app', label: 'Email de contacto' },
-  { key: 'hospital_name', value: 'Centro Cardiológico', label: 'Nombre del Centro / Hospital' },
-  { key: 'alert_message', value: 'Hola, contacto desde CardioCheck respecto al paciente', label: 'Mensaje de alerta WhatsApp' },
-]
-
-async function ensureDefaults() {
-  const count = await db.appSetting.count()
-  if (count === 0) {
-    await db.appSetting.createMany({ data: DEFAULT_SETTINGS })
-  }
-}
+import { supabaseAdmin } from '@/lib/supabase'
 
 // GET — list all settings
 export async function GET() {
   try {
-    await ensureDefaults()
-    const settings = await db.appSetting.findMany()
-    return NextResponse.json({ settings })
+    const { data: settings, error } = await supabaseAdmin
+      .from('app_settings')
+      .select('*')
+
+    if (error) throw error
+
+    return NextResponse.json({ settings: settings || [] })
   } catch (error) {
     console.error('Error fetching settings:', error)
     return NextResponse.json({ error: 'Error interno' }, { status: 500 })
@@ -38,13 +27,34 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'key y value son requeridos' }, { status: 400 })
     }
 
-    const updated = await db.appSetting.upsert({
-      where: { key },
-      update: { value },
-      create: { key, value, label: key },
-    })
+    // Use upsert
+    const { data: existing } = await supabaseAdmin
+      .from('app_settings')
+      .select('key')
+      .eq('key', key)
+      .single()
 
-    return NextResponse.json({ setting: updated })
+    let result
+    if (existing) {
+      const { data, error } = await supabaseAdmin
+        .from('app_settings')
+        .update({ value })
+        .eq('key', key)
+        .select()
+        .single()
+      if (error) throw error
+      result = data
+    } else {
+      const { data, error } = await supabaseAdmin
+        .from('app_settings')
+        .insert({ key, value, label: key })
+        .select()
+        .single()
+      if (error) throw error
+      result = data
+    }
+
+    return NextResponse.json({ setting: result })
   } catch (error) {
     console.error('Error updating setting:', error)
     return NextResponse.json({ error: 'Error interno' }, { status: 500 })

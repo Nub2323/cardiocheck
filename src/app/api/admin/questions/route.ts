@@ -1,18 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { supabaseAdmin } from '@/lib/supabase'
 
 /**
  * GET /api/admin/questions — List ALL questions (including inactive) for admin
  */
 export async function GET() {
   try {
-    const questions = await db.question.findMany({
-      orderBy: { order: 'asc' },
-    })
+    const { data: questions, error } = await supabaseAdmin
+      .from('questions')
+      .select('*')
+      .order('sort_order', { ascending: true })
 
-    const result = questions.map((q) => ({
-      ...q,
-      options: JSON.parse(q.options),
+    if (error) throw error
+
+    const result = (questions || []).map((q: Record<string, unknown>) => ({
+      id: q.id,
+      order: q.sort_order,
+      emoji: q.emoji,
+      question: q.question,
+      options: typeof q.options === 'string' ? JSON.parse(q.options) : q.options,
+      isActive: q.is_active,
+      isCritical: q.is_critical,
+      category: q.category,
+      createdAt: q.created_at,
+      updatedAt: q.updated_at,
     }))
 
     return NextResponse.json({ questions: result })
@@ -27,7 +38,6 @@ export async function GET() {
 
 /**
  * POST /api/admin/questions — Create a new question
- * Body: { emoji, question, options: [{label, severity}], isCritical, category, order }
  */
 export async function POST(request: NextRequest) {
   try {
@@ -41,7 +51,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate options format
     for (const opt of options) {
       if (!opt.label || !opt.severity) {
         return NextResponse.json(
@@ -54,22 +63,45 @@ export async function POST(request: NextRequest) {
     // Get max order if not provided
     let questionOrder = order
     if (questionOrder === undefined || questionOrder === null) {
-      const maxOrder = await db.question.aggregate({ _max: { order: true } })
-      questionOrder = (maxOrder._max.order ?? -1) + 1
+      const { data: maxQ } = await supabaseAdmin
+        .from('questions')
+        .select('sort_order')
+        .order('sort_order', { ascending: false })
+        .limit(1)
+        .single()
+
+      questionOrder = (maxQ?.sort_order ?? -1) + 1
     }
 
-    const newQuestion = await db.question.create({
-      data: {
+    const { data: newQuestion, error } = await supabaseAdmin
+      .from('questions')
+      .insert({
         emoji: emoji || '❓',
         question,
-        options: JSON.stringify(options),
-        isCritical: isCritical || false,
+        options,
+        is_critical: isCritical || false,
         category: category || 'general',
-        order: questionOrder,
-      },
-    })
+        sort_order: questionOrder,
+      })
+      .select()
+      .single()
 
-    return NextResponse.json({ question: { ...newQuestion, options } }, { status: 201 })
+    if (error) throw error
+
+    return NextResponse.json({
+      question: {
+        id: newQuestion.id,
+        order: newQuestion.sort_order,
+        emoji: newQuestion.emoji,
+        question: newQuestion.question,
+        options: typeof newQuestion.options === 'string' ? JSON.parse(newQuestion.options) : newQuestion.options,
+        isActive: newQuestion.is_active,
+        isCritical: newQuestion.is_critical,
+        category: newQuestion.category,
+        createdAt: newQuestion.created_at,
+        updatedAt: newQuestion.updated_at,
+      },
+    }, { status: 201 })
   } catch (error) {
     console.error('Error creating question:', error)
     return NextResponse.json(
@@ -81,7 +113,6 @@ export async function POST(request: NextRequest) {
 
 /**
  * PUT /api/admin/questions — Update a question
- * Body: { id, emoji?, question?, options?, isCritical?, category?, order?, isActive? }
  */
 export async function PUT(request: NextRequest) {
   try {
@@ -98,12 +129,11 @@ export async function PUT(request: NextRequest) {
     const data: Record<string, unknown> = {}
     if (updates.emoji !== undefined) data.emoji = updates.emoji
     if (updates.question !== undefined) data.question = updates.question
-    if (updates.isCritical !== undefined) data.isCritical = updates.isCritical
+    if (updates.isCritical !== undefined) data.is_critical = updates.isCritical
     if (updates.category !== undefined) data.category = updates.category
-    if (updates.order !== undefined) data.order = updates.order
-    if (updates.isActive !== undefined) data.isActive = updates.isActive
+    if (updates.order !== undefined) data.sort_order = updates.order
+    if (updates.isActive !== undefined) data.is_active = updates.isActive
     if (updates.options !== undefined) {
-      // Validate options
       for (const opt of updates.options) {
         if (!opt.label || !opt.severity) {
           return NextResponse.json(
@@ -112,15 +142,32 @@ export async function PUT(request: NextRequest) {
           )
         }
       }
-      data.options = JSON.stringify(updates.options)
+      data.options = updates.options
     }
 
-    const question = await db.question.update({
-      where: { id },
-      data,
-    })
+    const { data: question, error } = await supabaseAdmin
+      .from('questions')
+      .update(data)
+      .eq('id', id)
+      .select()
+      .single()
 
-    return NextResponse.json({ question: { ...question, options: updates.options ?? JSON.parse(question.options) } })
+    if (error) throw error
+
+    return NextResponse.json({
+      question: {
+        id: question.id,
+        order: question.sort_order,
+        emoji: question.emoji,
+        question: question.question,
+        options: typeof question.options === 'string' ? JSON.parse(question.options) : question.options,
+        isActive: question.is_active,
+        isCritical: question.is_critical,
+        category: question.category,
+        createdAt: question.created_at,
+        updatedAt: question.updated_at,
+      },
+    })
   } catch (error) {
     console.error('Error updating question:', error)
     return NextResponse.json(
@@ -132,7 +179,6 @@ export async function PUT(request: NextRequest) {
 
 /**
  * DELETE /api/admin/questions — Delete a question
- * Body: { id }
  */
 export async function DELETE(request: NextRequest) {
   try {
@@ -146,7 +192,12 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    await db.question.delete({ where: { id } })
+    const { error } = await supabaseAdmin
+      .from('questions')
+      .delete()
+      .eq('id', id)
+
+    if (error) throw error
 
     return NextResponse.json({ success: true })
   } catch (error) {

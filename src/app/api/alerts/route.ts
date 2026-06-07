@@ -1,24 +1,58 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { supabaseAdmin } from '@/lib/supabase'
 
 export async function GET() {
   try {
-    const alerts = await db.alert.findMany({
-      where: { status: 'pending' },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        checkIn: {
-          include: {
-            patient: {
-              select: { id: true, name: true, dni: true },
-            },
-            answers: true,
-          },
-        },
-      },
+    const { data: alerts, error } = await supabaseAdmin
+      .from('alerts')
+      .select(`
+        *,
+        check_ins (
+          *,
+          check_in_answers (*),
+          patients (id, name, dni)
+        )
+      `)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+
+    // Transform to match old format
+    const result = (alerts || []).map((alert: Record<string, unknown>) => {
+      const checkIn = alert.check_ins as Record<string, unknown> | null
+      const patient = checkIn?.patients as Record<string, unknown> | null
+
+      return {
+        id: alert.id,
+        checkInId: alert.check_in_id,
+        status: alert.status,
+        createdAt: alert.created_at,
+        updatedAt: alert.updated_at,
+        checkIn: checkIn ? {
+          id: checkIn.id,
+          patientId: checkIn.patient_id,
+          comment: checkIn.comment,
+          severity: checkIn.severity,
+          createdAt: checkIn.created_at,
+          answers: (checkIn.check_in_answers || []).map((a: Record<string, unknown>) => ({
+            id: a.id,
+            checkInId: a.check_in_id,
+            questionIndex: a.question_index,
+            question: a.question,
+            answer: a.answer,
+            severity: a.severity,
+          })),
+          patient: patient ? {
+            id: patient.id,
+            name: patient.name,
+            dni: patient.dni,
+          } : null,
+        } : null,
+      }
     })
 
-    return NextResponse.json({ alerts })
+    return NextResponse.json({ alerts: result })
   } catch (error) {
     console.error('Error listing alerts:', error)
     return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 })
@@ -38,10 +72,14 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Status debe ser "acknowledged" o "dismissed"' }, { status: 400 })
     }
 
-    const alert = await db.alert.update({
-      where: { id: alertId },
-      data: { status },
-    })
+    const { data: alert, error } = await supabaseAdmin
+      .from('alerts')
+      .update({ status })
+      .eq('id', alertId)
+      .select()
+      .single()
+
+    if (error) throw error
 
     return NextResponse.json({ alert })
   } catch (error) {

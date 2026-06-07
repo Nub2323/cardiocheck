@@ -1,0 +1,11 @@
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+
+// Public client (anon key) - for patient-facing operations
+export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey)
+
+// Admin client (service role key) - bypasses RLS, for admin operations
+export const supabaseAdmin: SupabaseClient = createClient(supabaseUrl, supabaseServiceKey)
