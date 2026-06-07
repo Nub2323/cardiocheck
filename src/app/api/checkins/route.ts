@@ -127,7 +127,17 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const patientId = searchParams.get('patientId')
 
-    const where = patientId ? { patientId } : {}
+    // Limit to last 7 days
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+    sevenDaysAgo.setHours(0, 0, 0, 0)
+
+    const where: Record<string, unknown> = {
+      createdAt: { gte: sevenDaysAgo },
+    }
+    if (patientId) {
+      where.patientId = patientId
+    }
 
     const checkIns = await db.checkIn.findMany({
       where,

@@ -85,7 +85,7 @@ export function CheckinHistoryScreen() {
             Historial de Check-ins
           </h2>
           <p className="text-[13px] leading-relaxed text-[#475569]">
-            {patientName ? `Registros de ${patientName}` : 'Sus registros diarios'}
+            {patientName ? `Registros de ${patientName} — últimos 7 días` : 'Sus registros diarios — últimos 7 días'}
           </p>
         </div>
 
