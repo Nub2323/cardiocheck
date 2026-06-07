@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   title: "CardioCheck - Seguimiento Cardiológico",
   description: "Sistema de monitoreo remoto post-alta para pacientes con insuficiencia cardíaca - CardioCheck",
   icons: {
-    icon: "/logo.svg",
+    icon: "/logo-cardiocheck.png",
   },
 };
 

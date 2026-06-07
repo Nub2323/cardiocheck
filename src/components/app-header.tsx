@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { MaterialIcon } from './icons'
 
 interface AppHeaderProps {
@@ -19,8 +20,15 @@ export function AppHeader({ icon, title, subtitle, tall = false }: AppHeaderProp
         background: 'linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 100%)',
       }}
     >
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/20">
-        <MaterialIcon name={icon} size={22} className="text-white" />
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl">
+        <Image
+          src="/logo-cardiocheck.png"
+          alt="CardioCheck"
+          width={40}
+          height={40}
+          className="rounded-xl object-cover"
+          priority
+        />
       </div>
       <div className="min-w-0">
         <p className="truncate text-sm font-bold leading-tight">{title}</p>

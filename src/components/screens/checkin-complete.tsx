@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { useAppState } from '@/lib/app-state'
 import { AppHeader } from '@/components/app-header'
 import { MaterialIcon } from '@/components/icons'
@@ -76,15 +77,17 @@ export function CheckinCompleteScreen() {
           </div>
         )}
 
-        {/* Success Icon */}
+        {/* Success Icon / Logo */}
         <div
-          className="mb-5 flex h-20 w-20 items-center justify-center rounded-full"
-          style={{ backgroundColor: needsGuardia ? '#FEF2F2' : '#DCFCE7' }}
+          className="mb-5 flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl"
+          style={{ boxShadow: needsGuardia ? '0 4px 12px rgba(220,38,38,0.2)' : '0 4px 12px rgba(22,163,74,0.2)' }}
         >
-          <MaterialIcon
-            name={needsGuardia ? 'warning' : 'check_circle'}
-            size={44}
-            className={needsGuardia ? 'text-[#DC2626]' : 'text-[#16A34A]'}
+          <Image
+            src="/logo-cardiocheck.png"
+            alt="CardioCheck"
+            width={80}
+            height={80}
+            className="rounded-2xl object-cover"
           />
         </div>
 

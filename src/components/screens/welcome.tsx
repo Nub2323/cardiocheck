@@ -1,11 +1,11 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { useAppState } from '@/lib/app-state'
 import { AppHeader } from '@/components/app-header'
 import { BottomNav } from '@/components/bottom-nav'
 import { MaterialIcon } from '@/components/icons'
-import { PulseHeartSVG } from '@/components/heart-svg'
 
 export function WelcomeScreen() {
   const { setScreen } = useAppState()
@@ -19,23 +19,31 @@ export function WelcomeScreen() {
       />
 
       <main className="flex-1 overflow-y-auto px-4 pb-24 pt-4">
-        {/* Hero Section */}
+        {/* Hero Section with Logo */}
         <div
           className="mb-4 overflow-hidden rounded-[24px] p-6"
           style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.6) 100%)',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.7) 100%)',
             backdropFilter: 'blur(20px)',
             boxShadow: '0 10px 25px -5px rgba(15,40,100,0.14), 0 8px 10px -6px rgba(15,40,100,0.07)',
           }}
         >
           <div className="mb-3 flex justify-center">
-            <PulseHeartSVG size={56} />
+            <div className="relative h-16 w-16 overflow-hidden rounded-2xl shadow-lg">
+              <Image
+                src="/logo-cardiocheck.png"
+                alt="CardioCheck"
+                fill
+                className="object-cover"
+                priority
+              />
+            </div>
           </div>
           <span
             className="mb-3 inline-block rounded-full px-3 py-1 text-[11px] font-bold"
             style={{ backgroundColor: '#DBEAFE', color: '#1E3A8A' }}
           >
-Seguimiento Cardiológico Remoto
+            Seguimiento Cardiológico Remoto
           </span>
           <h1
             className="mb-2 text-center text-xl font-extrabold leading-tight"
@@ -60,20 +68,26 @@ Seguimiento Cardiológico Remoto
           </button>
         </div>
 
-        {/* Image Card with Glass Effect */}
+        {/* AI-Generated Hero Image Card */}
         <div
           className="mb-4 overflow-hidden rounded-[24px]"
           style={{
-            background: 'linear-gradient(135deg, rgba(30,58,138,0.8) 0%, rgba(29,78,216,0.6) 100%)',
-            backdropFilter: 'blur(10px)',
             boxShadow: '0 10px 25px -5px rgba(15,40,100,0.14), 0 8px 10px -6px rgba(15,40,100,0.07)',
-            minHeight: 120,
           }}
         >
-          <div className="flex flex-col items-center justify-center p-6 text-center text-white">
-            <MaterialIcon name="monitor_heart" size={36} className="mb-2 text-white/90" />
-            <p className="text-sm font-bold">CardioCheck</p>
-            <p className="text-[11px] text-white/70">Seguimiento Cardiológico Remoto</p>
+          <div className="relative h-44 w-full">
+            <Image
+              src="/hero-cardio.png"
+              alt="CardioCheck - Seguimiento Cardiológico"
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#1E3A8A]/80 via-transparent to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-4">
+              <p className="text-sm font-extrabold text-white">CardioCheck</p>
+              <p className="text-[11px] text-white/80">Seguimiento Cardiológico Remoto</p>
+            </div>
           </div>
         </div>
 

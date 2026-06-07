@@ -1,11 +1,11 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import { useAppState } from '@/lib/app-state'
 import { AppHeader } from '@/components/app-header'
 import { BottomNav } from '@/components/bottom-nav'
 import { MaterialIcon } from '@/components/icons'
-import { PulseHeartSVG } from '@/components/heart-svg'
 import { getSeverityStyles } from '@/components/status-badge'
 import type { AnswerSeverity } from '@/lib/app-state'
 
@@ -62,7 +62,7 @@ export function PatientFlowScreen() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Tall Header */}
+      {/* Tall Header with Logo */}
       <header
         className="flex flex-col items-center justify-center gap-1 px-4 text-white"
         style={{
@@ -70,7 +70,15 @@ export function PatientFlowScreen() {
           background: 'linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 100%)',
         }}
       >
-        <PulseHeartSVG size={36} />
+        <div className="relative h-10 w-10 overflow-hidden rounded-xl">
+          <Image
+            src="/logo-cardiocheck.png"
+            alt="CardioCheck"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
         <p className="text-sm font-extrabold tracking-wide">CARDIOCHECK</p>
         <p className="text-[11px] text-white/70">Unidad de Cuidados Cardiológicos</p>
       </header>
@@ -86,18 +94,29 @@ export function PatientFlowScreen() {
           </p>
         </div>
 
-        {/* Hospital Image Card */}
+        {/* AI-Generated Hero Image Card */}
         <div
           className="mb-5 overflow-hidden rounded-[20px]"
           style={{
-            background: 'linear-gradient(135deg, rgba(30,58,138,0.7) 0%, rgba(29,78,216,0.5) 100%)',
-            minHeight: 100,
+            boxShadow: '0 10px 25px -5px rgba(15,40,100,0.14), 0 8px 10px -6px rgba(15,40,100,0.07)',
           }}
         >
-          <div className="flex flex-col items-center justify-center p-5 text-center text-white">
-            <MaterialIcon name="monitor_heart" size={32} className="mb-1 text-white/90" />
-            <p className="text-[12px] font-bold">CardioCheck</p>
-            <p className="text-[10px] text-white/70">Seguimiento Cardiológico</p>
+          <div className="relative h-36 w-full">
+            <Image
+              src="/hero-cardio.png"
+              alt="CardioCheck - Seguimiento Cardiológico"
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#1E3A8A]/70 via-transparent to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 flex items-center gap-2 p-3">
+              <MaterialIcon name="monitor_heart" size={20} className="text-white" />
+              <div>
+                <p className="text-[12px] font-bold text-white">CardioCheck</p>
+                <p className="text-[10px] text-white/80">Seguimiento Cardiológico</p>
+              </div>
+            </div>
           </div>
         </div>
 
